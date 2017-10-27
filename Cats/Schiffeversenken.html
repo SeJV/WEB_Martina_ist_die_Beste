@@ -1,22 +1,80 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="Utf-8">
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
-	integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
-	crossorigin="anonymous">
-<title>Schiffeversenken</title>
-<style>
-	body{
-	}
-</style>
-</head>
-<body>
-	<h1>Schiffeversenken</h1>
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Hello, world!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<input type="text" size="30" placeholder = "Spieler 1" name="player1">
-	<input type="text" size="30" placeholder = "Spieler 2" name="player2">
-	<button type="submit" name ="start">Start</button>
-</body>
+    <!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+  </head>
+  <body>
+		<div class="modal fade" id="playerName" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title">Spielername</h5>
+		      </div>
+		      <div class="modal-body">
+		        <form>
+							<div class="form-group">
+								<label for="player1" class="col-form-label">Spieler1:</label>
+								<input type="text" class="form-control" id="player1" autofocus/>
+							</div>
+							<div class="form-group">
+								<label for="player2" class="col-form-label">Spieler2:</label>
+								<input type="text" class="form-control" id="player2"/>
+							</div>
+						</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" onclick="set_player_name()">Weiter</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script
+			  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+			  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+			  crossorigin="anonymous"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+
+		<script>
+			$('#playerName').modal({
+				show: true,
+        keyboard: false,
+        backdrop: 'static'
+			})
+
+			function set_player_name() {
+				var player1Element = document.getElementById('player1')
+				var player2Element = document.getElementById('player2')
+
+				// We have to reset the form error with custom validity
+				player1Element.setCustomValidity('')
+				player2Element.setCustomValidity('')
+
+				if(player1Element.checkValidity() && player2Element.checkValidity()) {
+						var player1Name = document.getElementById('player1').value.trim()
+						var player2Name = document.getElementById('player2').value.trim()
+
+						if(player1Name.length == 0) {
+							player1Element.setCustomValidity('Spieler1 benötigt einen Namen')
+						}
+						else if(player2Name.length == 0) {
+							player2Element.setCustomValidity('Spieler2 benötigt einen Namen')
+						}
+						else if(player1Name === player2Name) {
+							player2Element.setCustomValidity('Spieler2 hat den gleichen Namen wie Spieler1')
+						} else {
+							$('#playerName').modal('hide')
+						}
+				}
+			}
+		</script>
+  </body>
 </html>
