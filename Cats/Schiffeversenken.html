@@ -8,11 +8,33 @@
 
     <!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
-    </head>
+  </head>
   <body>
-    <h1>Hello, world!</h1>
-		
-    <!-- Optional JavaScript -->
+		<div class="modal fade" id="playerName" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title">Spielername</h5>
+		      </div>
+		      <div class="modal-body">
+		        <form>
+							<div class="form-group">
+								<label for="player1" class="col-form-label">Spieler1:</label>
+								<input type="text" class="form-control" id="player1" autofocus/>
+							</div>
+							<div class="form-group">
+								<label for="player2" class="col-form-label">Spieler2:</label>
+								<input type="text" class="form-control" id="player2"/>
+							</div>
+						</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" onclick="set_player_name()">Weiter</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script
 			  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -20,5 +42,39 @@
 			  crossorigin="anonymous"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js"></script>
     <script type="text/javascript" src="js/bootstrap.js"></script>
+
+		<script>
+			$('#playerName').modal({
+				show: true,
+        keyboard: false,
+        backdrop: 'static'
+			})
+
+			function set_player_name() {
+				var player1Element = document.getElementById('player1')
+				var player2Element = document.getElementById('player2')
+
+				// We have to reset the form error with custom validity
+				player1Element.setCustomValidity('')
+				player2Element.setCustomValidity('')
+
+				if(player1Element.checkValidity() && player2Element.checkValidity()) {
+						var player1Name = document.getElementById('player1').value.trim()
+						var player2Name = document.getElementById('player2').value.trim()
+
+						if(player1Name.length == 0) {
+							player1Element.setCustomValidity('Spieler1 benötigt einen Namen')
+						}
+						else if(player2Name.length == 0) {
+							player2Element.setCustomValidity('Spieler2 benötigt einen Namen')
+						}
+						else if(player1Name === player2Name) {
+							player2Element.setCustomValidity('Spieler2 hat den gleichen Namen wie Spieler1')
+						} else {
+							$('#playerName').modal('hide')
+						}
+				}
+			}
+		</script>
   </body>
 </html>
