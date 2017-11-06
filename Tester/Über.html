@@ -1,24 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
 <meta charset="Utf-8">
 <title>Tester</title>
+    <style>
+        *{
+            font-family: fantasy;
+            text-decoration: underline wavy red;;
+        }
+        table
+        {
+            transform: translate(60); 
+            border-collapse: collapse; 
+        }
+        tr:nth-child(2n){
+            background-color: cornflowerblue;
+            color: cornsilk;
+        }
+        tr:nth-child(2n+1){
+            background-color: aquamarine;
+            color: black;
+        }
+    </style>
 </head>
 <body>
-	<form action="serveradresse">
-		<label> Anmeldename: </label> <input type="text" name="name">
-		<label> Passwort: </label> <input type="password" name="password">
-		<button type="submit">los</button>
-	</form>
-	<select name="Optionene" size="2" multiple="multiple">
-		<option value="Option 2">Option 1</option>
-		<option>Option 2</option>
-		<option>Option 3</option>
-	</select>
-	<form action="serveradresse">
-		<label> Suche: </label> <input type="text" name="suche">
-		<button type="submit">los</button>
-	</form>
-
+	<h1>Hi</h1>
+    <table>
+        <tr>
+            <td>1.</td>
+            <td>2.</td>
+            <td>3.</td>
+        </tr>
+        <tr>
+            <td>4.</td>
+            <td>5.</td>
+            <td>6.</td>
+        </tr>
+        <tr>
+            <td>7.</td>
+            <td>8.</td>
+            <td>9.</td>
+        </tr>
+    </table>
 </body>
 </html>
