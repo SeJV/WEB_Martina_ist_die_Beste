@@ -1,0 +1,8 @@
+@font-face {
+    font-family: myArial;
+    src: url(../Font/Arcon-Regular.otf);
+}
+
+h5 {
+  font-family: myArial;
+}
