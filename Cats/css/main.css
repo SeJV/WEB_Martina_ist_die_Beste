@@ -1,7 +1,12 @@
-.players-table table {
-    display: inline-block;
+.table-bordered {
+    width: 300px !important;
+    height: 300px !important;
 }
 
-.players-table tbody {
-    display: inline;
+td:hover{
+    background-color: lightblue;
+}
+
+body{
+    margin: 1%;
 }
