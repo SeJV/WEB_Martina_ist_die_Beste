@@ -1,6 +1,13 @@
 .table-bordered {
-    width: 300px !important;
-    height: 300px !important;
+    width: 80% !important;
+    height: 0 !important;
+    overflow: hidden;
+}
+
+td{
+    padding: 0 !important;
+    width: 10% !important;
+    padding-bottom: 10% !important;
 }
 
 td:hover{
