@@ -1,1 +1,7 @@
+.players-table table {
+    display: inline-block;
+}
 
+.players-table tbody {
+    display: inline;
+}
