@@ -14,6 +14,10 @@ td:hover{
     background-color: lightblue;
 }
 
+td:visited{
+    background-color: blue;
+}
+
 body{
     margin: 1%;
 }

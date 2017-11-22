@@ -22,75 +22,11 @@
     </div>
     <div class="row">
       <div class="col-md-6">
-        <table class="table table-bordered">
-          <tbody>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-          </tbody>
+        <table class="table table-bordered" id = "tablePlayer1">
         </table>
       </div>
       <div class="col-md-6">
-        <table class="table table-bordered">
-          <tbody>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-          </tbody>
+        <table class="table table-bordered" id = "tablePlayer2">
         </table>
       </div>
     </div>
@@ -127,6 +63,23 @@
   <script type="text/javascript" src="js/bootstrap.js"></script>
 
   <script>
+      $(document).ready(function(){
+        $("#tablePlayer1").html(tabler(1))
+        $("#tablePlayer2").html(tabler(2))  
+      })
+      function tabler(playerNumber){
+        var str = ""
+        for(var i = 0; i < 10; i++){
+            str += "<tr>"
+            for(var j = 0; j < 10 ; j++){
+                str+= "<td></td>"
+            }
+            str += "</tr>"
+        }
+        return str
+    };  
+      
+      
         $('#playerName').modal({
         show: true,
         keyboard: false,
@@ -139,9 +92,9 @@
         keyboard: false,
         backdrop: 'static'
       })
-    }
-
-    function set_player_name() {
+    }     
+      
+    function set_player_name() {    
       var player1Element = document.getElementById('player1')
       var player2Element = document.getElementById('player2')
 
