@@ -1,5 +1,9 @@
+body{
+    font-family: 'Oxygen', sans-serif;
+}
+
 .table-bordered {
-    width: 80% !important;
+    width: 90% !important;
     height: 0 !important;
     overflow: hidden;
 }
@@ -10,14 +14,19 @@ td{
     padding-bottom: 10% !important;
 }
 
-td:hover{
-    background-color: lightblue;
+.spielfeld1{
+    background-color: #c4e0a4;
 }
-
-td:visited{
-    background-color: blue;
+.spielfeld1:hover{
+    background-color: #93ae75;
+}
+.spielfeld2{
+    background-color: #fff9c4;
+}
+.spielfeld2:hover{
+    background-color: #cbc693;
 }
 
 body{
-    margin: 1%;
+    margin: 5%;
 }

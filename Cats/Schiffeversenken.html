@@ -6,7 +6,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <!-- Font -->
@@ -72,14 +72,12 @@
         for(var i = 0; i < 10; i++){
             str += "<tr>"
             for(var j = 0; j < 10 ; j++){
-                str+= "<td></td>"
+                str+= "<td class=\"spielfeld"+playerNumber+"\" id= feld"+ i + j +"></td>"
             }
             str += "</tr>"
         }
         return str
-    };  
-      
-      
+    }      
         $('#playerName').modal({
         show: true,
         keyboard: false,
