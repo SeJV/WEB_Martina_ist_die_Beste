@@ -1,0 +1,19 @@
+{
+  "name": "martina_ist_die_beste",
+  "version": "0.3.0",
+  "description": "",
+  "main": "Schiffeversenken.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeJV/WEB_Martina_ist_die_Beste.git"
+  },
+  "author": "me",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SeJV/WEB_Martina_ist_die_Beste/issues"
+  },
+  "homepage": "https://github.com/SeJV/WEB_Martina_ist_die_Beste#readme"
+}
