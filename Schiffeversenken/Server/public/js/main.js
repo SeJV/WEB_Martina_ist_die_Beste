@@ -1,14 +1,44 @@
-
+      var socket;
+      var lastFire;
       $(document).ready(function(){
-        $("#tablePlayer1").html(tabler(1))
-        $("#tablePlayer2").html(tabler(2))  
+        socket = io();
+        $("#tablePlayer1").html(tabler(1));
+        $("#tablePlayer2").html(tabler(2));
+        socket.on('fireResult', function(result){
+            if(result){
+                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "red";
+            }
+            else{
+                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "blue";    
+            }
+          }); 
+          socket.on('fireResultEnemy', function(x,y,result){
+            if(result){
+                document.getElementById("myField"+x+y).style.backgroundColor = "red";
+            }
+            else{
+                document.getElementById("myField"+x+y).style.backgroundColor = "blue";    
+            }
+          }); 
+        //open_player_name_modal();
       })
+
+      function fire(x,y) {
+          lastFire=[x,y];
+          socket.emit('fire', x , y);
+      };
+
       function tabler(playerNumber){
         var str = ""
         for(var i = 0; i < 10; i++){
             str += "<tr>"
             for(var j = 0; j < 10 ; j++){
-                str+= "<td class=\"spielfeld"+playerNumber+"\" id= feld"+ i + j +"></td>"
+                if(playerNumber==1){
+                    str+= "<td class=\"spielfeld"+playerNumber+"\" id= myField"+ i + j + "></td>"        
+                }
+                else{
+                    str+= "<td onclick=\"fire("+i +","+j+")\" class=\"spielfeld"+playerNumber+"\" id= enemField"+ i + j + "></td>"    
+                }
             }
             str += "</tr>"
         }
