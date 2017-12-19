@@ -1,3 +1,4 @@
+var shipplacement = require('./ship-placement');
 var express = require('express')
 var app = express()
 var http = require('http').Server(app);
@@ -5,8 +6,10 @@ var io = require('socket.io')(http);
 const servestatic = require('serve-static')
 var router = express.Router();
 var path = __dirname + '/public/';
-var player1;
-var player2;
+var player1Socket;
+var player2Socket;
+var player1Field;
+var player2Field;
 
 router.use(function (req,res,next) {
   console.log("/" + req.method);
@@ -23,29 +26,36 @@ app.use("/",router);
 
 io.on('connection', function(socket){
     console.log('a user connected');
-    if(!player1){
-        player1 = socket;
-        player1.on('disconnect', function(){
+    if(!player1Socket){
+        player1Socket = socket;
+        player1Socket.on('disconnect', function(){
             console.log("Player1 disconnected");
-            player1 = undefined;
+            player1Socket = undefined;
         })
-        player1.on('fire', function(x,y){
-            if(player1 && player2){
-                player1.emit('fireResult', true);
-                player2.emit('fireResultEnemy',x ,y ,true);
+        player1Socket.on('fire', function(x,y){
+            if(player1Socket && player2Socket){
+                player1Socket.emit('fireResult', true);
+                player2Socket.emit('fireResultEnemy',x ,y ,true);
             }
         })
     }
-    else if(!player2){
-        player2 = socket;
-        player2.on('disconnect', function(){
+    else if(!player2Socket){
+        player2Socket = socket;
+        if(!player1Field && !player2Field){
+            player1Field = shipplacement.generateShipPlacement();
+            player2Field = shipplacement.generateShipPlacement();
+
+            player1Socket.emit('myShips', player1Field);
+            player2Socket.emit('myShips', player2Field);
+        }
+        player2Socket.on('disconnect', function(){
             console.log("Player2 disconnected");
-            player2 = undefined;
+            player2Socket = undefined;
         })
-        player2.on('fire', function(x,y){
-            if(player1 && player2){
-                player1.emit('fireResultEnemy',x ,y ,true);
-                player2.emit('fireResult', true);
+        player2Socket.on('fire', function(x,y){
+            if(player1Socket && player2Socket){
+                player1Socket.emit('fireResultEnemy',x ,y ,true);
+                player2Socket.emit('fireResult', true);
             }
         })
     }

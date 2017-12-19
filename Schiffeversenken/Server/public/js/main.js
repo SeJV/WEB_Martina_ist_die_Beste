@@ -20,6 +20,15 @@
                 document.getElementById("myField"+x+y).style.backgroundColor = "blue";    
             }
           }); 
+          socket.on('myShips', function(playerField){
+            for(x = 0; x<10; x++){
+              for(y = 0; y<10; y++){
+                if(playerField[x][y]){
+                  document.getElementById("myField"+x+y).style.backgroundColor = "black";
+                }
+              }
+            }
+          });
         //open_player_name_modal();
       })
 
