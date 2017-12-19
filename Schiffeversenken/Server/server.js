@@ -34,8 +34,14 @@ io.on('connection', function(socket){
         })
         player1Socket.on('fire', function(x,y){
             if(player1Socket && player2Socket){
-                player1Socket.emit('fireResult', true);
-                player2Socket.emit('fireResultEnemy',x ,y ,true);
+                if(player2Field[y][x]){
+                    player1Socket.emit('fireResult', true);
+                    player2Socket.emit('fireResultEnemy',x ,y ,true);
+                }
+                else{
+                    player1Socket.emit('fireResult', false);
+                    player2Socket.emit('fireResultEnemy',x ,y ,false);
+                }
             }
         })
     }
@@ -54,8 +60,14 @@ io.on('connection', function(socket){
         })
         player2Socket.on('fire', function(x,y){
             if(player1Socket && player2Socket){
-                player1Socket.emit('fireResultEnemy',x ,y ,true);
-                player2Socket.emit('fireResult', true);
+                if(player1Field[y][x]){
+                    player1Socket.emit('fireResultEnemy',x ,y ,true);
+                    player2Socket.emit('fireResult', true);
+                }
+                else{
+                    player1Socket.emit('fireResultEnemy',x ,y ,false);
+                    player2Socket.emit('fireResult', false);
+                }
             }
         })
     }

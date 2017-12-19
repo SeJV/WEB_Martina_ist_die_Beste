@@ -14,7 +14,7 @@
           }); 
           socket.on('fireResultEnemy', function(x,y,result){
             if(result){
-                document.getElementById("myField"+x+y).style.backgroundColor = "red";
+                document.getElementById("myField"+x+y).style.backgroundColor = "grey";
             }
             else{
                 document.getElementById("myField"+x+y).style.backgroundColor = "blue";    
@@ -23,7 +23,7 @@
           socket.on('myShips', function(playerField){
             for(x = 0; x<10; x++){
               for(y = 0; y<10; y++){
-                if(playerField[x][y]){
+                if(playerField[y][x]){
                   document.getElementById("myField"+x+y).style.backgroundColor = "black";
                 }
               }
