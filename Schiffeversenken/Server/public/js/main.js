@@ -28,6 +28,10 @@
                 }
               }
             }
+            socket.on('playerNumber', function(number){
+              document.getElementById("playerNumber").html("Player: " + number);
+              
+            });
           });
         //open_player_name_modal();
       })
