@@ -1,37 +1,39 @@
-      var socket;
-      var lastFire;
+      let socket;
+      let lastFire;
       $(document).ready(function(){
         socket = io();
         $("#tablePlayer1").html(tabler(1));
         $("#tablePlayer2").html(tabler(2));
         socket.on('fireResult', function(result){
             if(result){
-                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "red";
+                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "#FF5341";
             }
             else{
-                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "blue";    
+                document.getElementById("enemField"+lastFire[0]+lastFire[1]).style.backgroundColor = "#81C1E5";    
             }
           }); 
           socket.on('fireResultEnemy', function(x,y,result){
             if(result){
-                document.getElementById("myField"+x+y).style.backgroundColor = "grey";
+                document.getElementById("myField"+x+y).style.backgroundColor = "#6D9A9A";
             }
             else{
-                document.getElementById("myField"+x+y).style.backgroundColor = "blue";    
+                document.getElementById("myField"+x+y).style.backgroundColor = "#6DB9DA";    
             }
           }); 
           socket.on('myShips', function(playerField){
             for(x = 0; x<10; x++){
               for(y = 0; y<10; y++){
                 if(playerField[y][x]){
-                  document.getElementById("myField"+x+y).style.backgroundColor = "black";
+                  document.getElementById("myField"+x+y).style.backgroundColor = "#414B37";
                 }
               }
             }
             socket.on('playerNumber', function(number){
-              document.getElementById("playerNumber").html("Player: " + number);
-              
+              $("#playerNumber").html("You are player " + number);
             });
+            socket.on('playerTurn', (number)=>{
+              $("#turn").html("It's turn of player " + number);
+            })
           });
         //open_player_name_modal();
       })

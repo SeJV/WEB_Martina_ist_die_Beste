@@ -1,18 +1,25 @@
-var shipplacement = require('./ship-placement');
-var express = require('express')
-var app = express()
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const shipplacement = require('./ship-placement');
+const shiplogic = require('./ship-logic');
+const express = require('express')
+const app = express()
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const servestatic = require('serve-static')
-var router = express.Router();
-var path = __dirname + '/public/';
-var player1Socket;
-var player2Socket;
-var player1Field;
-var player2Field;
+const router = express.Router();
+const path = __dirname + '/public/';
+
+let player1Socket;
+let player2Socket;
+
+let player1Field;
+let player2Field;
+
+let player1FieldOfShots = shiplogic.createField();
+let player2FieldOfShots = shiplogic.createField();
+
 const PLAYER_1_TURN = 1;
 const PLAYER_2_TURN = 2;
-var turn = PLAYER_1_TURN;
+let turn = PLAYER_1_TURN;
 
 router.use(function (req,res,next) {
   console.log("/" + req.method);
@@ -20,7 +27,7 @@ router.use(function (req,res,next) {
 });
 
 router.get("/",function(req,res){
-  res.sendFile(path + "Schiffeversenken.html");
+  res.sendFile(path + "battleship.html");
 });
 
 app.use(servestatic('public'));
@@ -41,11 +48,13 @@ io.on('connection', function(socket){
                     player1Socket.emit('fireResult', true);
                     player2Socket.emit('fireResultEnemy',x ,y ,true);
                     turn = PLAYER_1_TURN;
+                    emitTurn();
                 }
                 else{
                     player1Socket.emit('fireResult', false);
                     player2Socket.emit('fireResultEnemy',x ,y ,false);
                     turn = PLAYER_2_TURN;
+                    emitTurn();
                 }
             }
         })
@@ -62,6 +71,9 @@ io.on('connection', function(socket){
         player1Socket.emit('playerNumber', 1);
         player2Socket.emit('playerNumber', 2);
         
+        player1Socket.emit('playerTurn', turn);
+        player2Socket.emit('playerTurn', turn);
+
         player2Socket.on('disconnect', function(){
             console.log("Player2 disconnected");
             player2Socket = undefined;
@@ -72,11 +84,13 @@ io.on('connection', function(socket){
                     player1Socket.emit('fireResultEnemy',x ,y ,true);
                     player2Socket.emit('fireResult', true);
                     turn = PLAYER_2_TURN;
+                    emitTurn();
                 }
                 else{
                     player1Socket.emit('fireResultEnemy',x ,y ,false);
                     player2Socket.emit('fireResult', false);
                     turn = PLAYER_1_TURN;
+                    emitTurn();
                 }
             }
         })
@@ -87,3 +101,14 @@ http.listen(3000,function(){
   console.log("Live at Port 3000");
 });  
 
+function emitTurn(){
+    player1Socket.emit('playerTurn', turn);
+    player2Socket.emit('playerTurn', turn);
+}
+
+function player1ShotFired(x,y){
+    player1FieldOfShots[y][x] = 1;
+}
+function player2ShotFired(x,y){
+    player2FieldOfShots[y][x] = 1;
+}

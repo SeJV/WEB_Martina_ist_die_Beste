@@ -1,3 +1,5 @@
+const shiplogic = require('./ship-logic');
+
 const SHIP_CARRIER_SIZE = 5;
 const SHIP_BATTLESHIP_SIZE = 4;
 const SHIP_CRUISER_SIZE = 3;
@@ -9,7 +11,7 @@ function generateShipPlacement() {
 
   do {
     // rest the field
-    field = createField();
+    field = shiplogic.createField();
   }
   while(!tryToAddShip(field, SHIP_CARRIER_SIZE, TRY_COUNT) ||
         !tryToAddShip(field, SHIP_BATTLESHIP_SIZE, TRY_COUNT) ||
@@ -101,19 +103,6 @@ function checkNearbyField(field, posX, posY) {
   }
 
   return field[posY][posX] !== 1;
-}
-
-function createField() {
-  return [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 }
 
 function getRandomInt(min, max) {
