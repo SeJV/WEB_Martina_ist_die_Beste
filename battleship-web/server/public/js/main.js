@@ -28,14 +28,22 @@ $(document).ready(function () {
         }
       }
     }
-    socket.on('playerTurn', (isYourTurn) => {
-      if (isYourTurn) {
-        $("#turn").html("It's your turn!");
-      }
-      else {
-        $("#turn").html("Wait for opponent");
-      }
-    })
+  });
+  socket.on('playerTurn', (isYourTurn) => {
+    if (isYourTurn) {
+      $("#turn").html("It's your turn!");
+    }
+    else {
+      $("#turn").html("Wait for opponent");
+    }
+  });
+  socket.on('won',(highscore)=>{
+    document.getElementById("myBody").style.backgroundColor = "green";
+    $("#highscore").html("YOUR HIGHSCORE: " + highscore);
+  });
+  socket.on('lost',(highscore)=>{
+    document.getElementById("myBody").style.backgroundColor = "red";
+    $("#highscore").html("OPPONENTS HIGHSCORE: "+ highscore);
   });
   //open_player_name_modal();
 })
