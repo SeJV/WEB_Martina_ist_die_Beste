@@ -1,12 +1,14 @@
-const shipplacement = require('./ship-placement');
-const shiplogic = require('./ship-logic');
-const express = require('express')
-const app = express()
+const shipplacement = require(__dirname + '/ship-placement');
+const shiplogic = require(__dirname + '/ship-logic');
+const express = require('express');
+const path = require('path');
+const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const servestatic = require('serve-static')
+const servestatic = require('serve-static');
 const router = express.Router();
-const path = __dirname + '/public/';
+const config = require('config.json')(__dirname + '/config.dev.json');
+const publicDirectory = path.join(__dirname, '/../client/public/');
 
 let player1Socket;
 let player2Socket;
@@ -28,26 +30,26 @@ const ShOT_ON_SHIP = 2;
 let turn = PLAYER_1_TURN;
 
 router.use(function (req, res, next) {
-    console.log("/" + req.method);
+    console.log('/' + req.method);
     next();
 });
 
-router.get("/", function (req, res) {
-    res.sendFile(path + "battleship.html");
+router.get('/', function (req, res) {
+    res.sendFile(path.join(publicDirectory, 'battleship.html'));
 });
 
-app.use(servestatic('public'));
+app.use(servestatic(publicDirectory));
 
-app.use("/", router);
+app.use('/', router);
 
 io.on('connection', function (socket) {
     console.log('a user connected');
     if (!player1Socket) {
         player1Socket = socket;
         player1Socket.on('disconnect', function () {
-            console.log("Player1 disconnected");
+            console.log('Player1 disconnected');
             player1Socket = undefined;
-        })
+        });
         player1Socket.on('fire', function (x, y) {
             if (player1Socket && player2Socket && turn === PLAYER_1_TURN && !gameOver()) {
                 if (player2Field[y][x]) {
@@ -69,7 +71,7 @@ io.on('connection', function (socket) {
             if(gameOver()){
                 emitWinnerAndLoser();
             }
-        })
+        });
     }
     else if (!player2Socket) {
         player2Socket = socket;
@@ -83,9 +85,9 @@ io.on('connection', function (socket) {
         emitTurn();
 
         player2Socket.on('disconnect', function () {
-            console.log("Player2 disconnected");
+            console.log('Player2 disconnected');
             player2Socket = undefined;
-        })
+        });
         player2Socket.on('fire', function (x, y) {
             if (player1Socket && player2Socket && turn === PLAYER_2_TURN && !gameOver()) {
                 if (player1Field[y][x]) {
@@ -107,12 +109,12 @@ io.on('connection', function (socket) {
             if(gameOver()){
                 emitWinnerAndLoser();
             }
-        })
+        });
     }
 });
 
-http.listen(3000, function () {
-    console.log("Live at Port 3000");
+http.listen(config.server.port, config.server.host, function () {
+    console.log('Live at Port ' + config.server.port);
 });
 
 function emitTurn() {

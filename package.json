@@ -1,0 +1,30 @@
+{
+  "name": "martina_ist_die_beste",
+  "version": "0.3.0",
+  "description": "HTML Zeug",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeJV/WEB_Martina_ist_die_Beste.git"
+  },
+  "author": "me",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SeJV/WEB_Martina_ist_die_Beste/issues"
+  },
+  "homepage": "https://github.com/SeJV/WEB_Martina_ist_die_Beste#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "config.json": "0.0.4",
+    "express": "^4.16.2",
+    "serve-static": "^1.13.1",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.14.0",
+    "eslint-plugin-react": "^7.5.1"
+  }
+}
