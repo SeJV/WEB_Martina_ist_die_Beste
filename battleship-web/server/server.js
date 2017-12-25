@@ -1,12 +1,12 @@
-const shipplacement = require('./ship-placement');
-const shiplogic = require('./ship-logic');
+const shipplacement = require(__dirname + '/ship-placement');
+const shiplogic = require(__dirname + '/ship-logic');
 const express = require('express')
+const path = require('path')
 const app = express()
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const servestatic = require('serve-static')
 const router = express.Router();
-const path = __dirname + '/public/';
 
 let player1Socket;
 let player2Socket;
@@ -33,10 +33,10 @@ router.use(function (req, res, next) {
 });
 
 router.get("/", function (req, res) {
-    res.sendFile(path + "battleship.html");
+    res.sendFile(path.join(__dirname, '/../client/public/battleship.html'));
 });
 
-app.use(servestatic('public'));
+app.use(servestatic(path.join(__dirname, '/../client/public/')))
 
 app.use("/", router);
 
@@ -113,6 +113,7 @@ io.on('connection', function (socket) {
 
 http.listen(3000, function () {
     console.log("Live at Port 3000");
+    console.log(path);
 });
 
 function emitTurn() {
