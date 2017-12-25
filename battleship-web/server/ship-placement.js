@@ -7,7 +7,7 @@ const SHIP_SUBMARINE_SIZE = 2;
 const TRY_COUNT = 100;
 
 function generateShipPlacement() {
-  var field;
+  let field;
 
   do {
     // rest the field
@@ -28,8 +28,8 @@ function generateShipPlacement() {
 }
 
 function tryToAddShip(field, size, tryCount) {
-  for(var i = 0; i < tryCount; ++i) {
-    var direction = getRandomInt(0, 1);
+  for(let i = 0; i < tryCount; ++i) {
+    let direction = getRandomInt(0, 1);
 
     if(direction === 0) {
         if(addShipVertical(field, getRandomInt(0, 10), getRandomInt(0, 10), size)) {
@@ -46,13 +46,13 @@ function tryToAddShip(field, size, tryCount) {
 }
 
 function addShipVertical(field, startPosX, startPosY, size) {
-  for(var i = 0; i < size; ++i) {
+  for(let i = 0; i < size; ++i) {
     if(!isValiedPosition(field, startPosX, startPosY+i)) {
       return false;
     }
   }
 
-  for(var i = 0; i < size; ++i) {
+  for(let i = 0; i < size; ++i) {
     field[startPosY+i][startPosX] = 1;
   }
 
@@ -60,13 +60,13 @@ function addShipVertical(field, startPosX, startPosY, size) {
 }
 
 function addShipHorizontal(field, startPosX, startPosY, size) {
-  for(var i = 0; i < size; ++i) {
+  for(let i = 0; i < size; ++i) {
     if(!isValiedPosition(field, startPosX+i, startPosY)) {
       return false;
     }
   }
 
-  for(var i = 0; i < size; ++i) {
+  for(let i = 0; i < size; ++i) {
     field[startPosY][startPosX + i] = 1;
   }
 

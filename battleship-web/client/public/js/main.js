@@ -54,10 +54,10 @@ function fire(x, y) {
 };
 
 function tabler(playerNumber) {
-  var str = ""
-  for (var i = 0; i < 10; i++) {
+  let str = ""
+  for (let i = 0; i < 10; i++) {
     str += "<tr>"
-    for (var j = 0; j < 10; j++) {
+    for (let j = 0; j < 10; j++) {
       if (playerNumber == 1) {
         str += "<td class=\"spielfeld" + playerNumber + "\" id= myField" + i + j + "></td>"
       }
@@ -84,16 +84,16 @@ function open_player_name_modal() {
 }
 
 function set_player_name() {
-  var player1Element = document.getElementById('player1')
-  var player2Element = document.getElementById('player2')
+  let player1Element = document.getElementById('player1')
+  let player2Element = document.getElementById('player2')
 
   // We have to reset the form errors with custom validity
   player1Element.setCustomValidity('')
   player2Element.setCustomValidity('')
 
   if (player1Element.checkValidity() && player2Element.checkValidity()) {
-    var player1Name = document.getElementById('player1').value.trim()
-    var player2Name = document.getElementById('player2').value.trim()
+    let player1Name = document.getElementById('player1').value.trim()
+    let player2Name = document.getElementById('player2').value.trim()
 
     if (player1Name.length == 0) {
       player1Element.setCustomValidity('Spieler1 benötigt einen Namen')
