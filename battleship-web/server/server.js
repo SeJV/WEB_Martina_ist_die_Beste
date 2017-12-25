@@ -7,7 +7,8 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const servestatic = require('serve-static');
 const router = express.Router();
-const config = require('config.json')(__dirname + '/config.dev.json')
+const config = require('config.json')(__dirname + '/config.dev.json');
+const publicDirectory = path.join(__dirname, '/../client/public/');
 
 let player1Socket;
 let player2Socket;
@@ -34,10 +35,10 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/../client/public/battleship.html'));
+    res.sendFile(path.join(publicDirectory, 'battleship.html'));
 });
 
-app.use(servestatic(path.join(__dirname, '/../client/public/')));
+app.use(servestatic(publicDirectory));
 
 app.use('/', router);
 
