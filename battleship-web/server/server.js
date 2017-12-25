@@ -7,6 +7,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const servestatic = require('serve-static');
 const router = express.Router();
+const config = require('config.json')(__dirname + '/config.dev.json')
 
 let player1Socket;
 let player2Socket;
@@ -111,8 +112,8 @@ io.on('connection', function (socket) {
     }
 });
 
-http.listen(3000, function () {
-    console.log('Live at Port 3000');
+http.listen(config.server.port, config.server.host, function () {
+    console.log('Live at Port ' + config.server.port);
 });
 
 function emitTurn() {
