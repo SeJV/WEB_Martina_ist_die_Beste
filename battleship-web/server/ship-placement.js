@@ -1,4 +1,6 @@
-const shiplogic = require('./ship-logic');
+const shipLogic = require('./ship-logic');
+const Ship = require(__dirname + '/ship');
+const Coordinate = require(__dirname + '/coordinate');
 
 const SHIP_CARRIER_SIZE = 5;
 const SHIP_BATTLESHIP_SIZE = 4;
@@ -6,71 +8,94 @@ const SHIP_CRUISER_SIZE = 3;
 const SHIP_SUBMARINE_SIZE = 2;
 const TRY_COUNT = 100;
 
+
 function generateShipPlacement() {
-    let field;
+    const shipTypes = [
+        SHIP_CARRIER_SIZE, SHIP_BATTLESHIP_SIZE, SHIP_BATTLESHIP_SIZE,
+        SHIP_CRUISER_SIZE, SHIP_CRUISER_SIZE, SHIP_CRUISER_SIZE,
+        SHIP_SUBMARINE_SIZE, SHIP_SUBMARINE_SIZE, SHIP_SUBMARINE_SIZE,
+        SHIP_SUBMARINE_SIZE
+    ];
+    let ships = [];
+    let field = shipLogic.createField();
 
-    do {
-        // rest the field
-        field = shiplogic.createField();
+    while(tryToGenerateShipPlacement(field, ships, shipTypes.slice()))
+    {
+        //reset
+        ships = [];
+        field = shipLogic.createField();
     }
-    while(!tryToAddShip(field, SHIP_CARRIER_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_BATTLESHIP_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_BATTLESHIP_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_CRUISER_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_CRUISER_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_CRUISER_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_SUBMARINE_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_SUBMARINE_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_SUBMARINE_SIZE, TRY_COUNT) ||
-        !tryToAddShip(field, SHIP_SUBMARINE_SIZE, TRY_COUNT));
 
-    return field;
+    return ships;
+}
+
+function tryToGenerateShipPlacement(field, ships, shipTypes) {
+    let shipType = shipTypes.shift();
+    if(shipType === undefined) {
+        return true;
+    }
+
+    let ship = tryToAddShip(field, shipType, TRY_COUNT);
+    if(ship.hasCoordinates()) {
+        ships.push(ship);
+
+        return tryToGenerateShipPlacement(field, ships, shipTypes);
+    } else {
+        return false;
+    }
 }
 
 function tryToAddShip(field, size, tryCount) {
+    let ship;
+
     for(let i = 0; i < tryCount; ++i) {
         let direction = getRandomInt(0, 1);
 
         if(direction === 0) {
-            if(addShipVertical(field, getRandomInt(0, 10), getRandomInt(0, 10), size)) {
-                return true;
-            }
+            ship = addShipVertical(field, getRandomInt(0, 10), getRandomInt(0, 10), size);
         } else {
-            if(addShipHorizontal(field, getRandomInt(0, 10), getRandomInt(0, 10), size)) {
-                return true;
-            }
+            ship = addShipHorizontal(field, getRandomInt(0, 10), getRandomInt(0, 10), size);
+        }
+        if(ship.hasCoordinates()) {
+            return ship;
         }
     }
 
-    return false;
+    return ship;
 }
 
 function addShipVertical(field, startPosX, startPosY, size) {
+    let ship = new Ship();
+
     for(let i = 0; i < size; ++i) {
         if(!isValiedPosition(field, startPosX, startPosY+i)) {
-            return false;
+            return ship;
         }
     }
 
     for(let i = 0; i < size; ++i) {
         field[startPosY+i][startPosX] = 1;
+        ship.addCoordinate(new Coordinate(startPosX, startPosY+i));
     }
 
-    return true;
+    return ship;
 }
 
 function addShipHorizontal(field, startPosX, startPosY, size) {
+    let ship = new Ship();
+
     for(let i = 0; i < size; ++i) {
         if(!isValiedPosition(field, startPosX+i, startPosY)) {
-            return false;
+            return ship;
         }
     }
 
     for(let i = 0; i < size; ++i) {
         field[startPosY][startPosX + i] = 1;
+        ship.addCoordinate(new Coordinate(startPosX + i, startPosY));
     }
 
-    return true;
+    return ship;
 }
 
 function isValiedPosition(field, startPosX, startPosY) {
