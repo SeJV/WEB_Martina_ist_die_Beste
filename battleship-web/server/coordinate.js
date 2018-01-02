@@ -8,6 +8,10 @@ module.exports = class Coordinate {
         return lCoordinate.x == rCoordinate.x && lCoordinate.y == rCoordinate.y;
     }
 
+    static copy(coordinate){
+        return new Coordinate(coordinate.xCoordinate, coordinate.yCoordinate);
+    }
+
     get xCoordinate(){
         return this.x;
     }

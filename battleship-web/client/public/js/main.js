@@ -4,7 +4,9 @@ $(document).ready(function () {
     socket = io();
     $('#tablePlayer1').html(tabler(1));
     $('#tablePlayer2').html(tabler(2));
-    socket.on('fireResult', function (result) {
+    sizeContent();
+    $(window).resize(sizeContent);
+    socket.on('fireResult', result => {
         if (result) {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
         }
@@ -12,7 +14,7 @@ $(document).ready(function () {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#81C1E5';
         }
     });
-    socket.on('fireResultEnemy', function (x, y, result) {
+    socket.on('fireResultEnemy', (x, y, result) =>{
         if (result) {
             document.getElementById('myField' + x + y).style.backgroundColor = '#6D9A9A';
         }
@@ -20,7 +22,7 @@ $(document).ready(function () {
             document.getElementById('myField' + x + y).style.backgroundColor = '#6DB9DA';
         }
     });
-    socket.on('myShips', function (playerField) {
+    socket.on('myShips', playerField=> {
         for (x = 0; x < 10; x++) {
             for (y = 0; y < 10; y++) {
                 if (playerField[y][x]) {
@@ -29,23 +31,34 @@ $(document).ready(function () {
             }
         }
     });
-    socket.on('playerTurn', (isYourTurn) => {
+    socket.on('playerTurn', isYourTurn => {
         if (isYourTurn) {
-            $('#turn').html('It\'s your turn!');
+            $('#myLabel').css('color', 'red');
+            $('#opponentLabel').css('color', 'black');
         }
         else {
-            $('#turn').html('Wait for opponent');
+            $('#myLabel').css('color', 'black');
+            $('#opponentLabel').css('color', 'red');
         }
     });
-    socket.on('won',(highscore)=>{
+    socket.on('won',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('YOUR HIGHSCORE: ' + highscore);
     });
-    socket.on('lost',(highscore)=>{
+    socket.on('lost',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'red';
         $('#highscore').html('OPPONENTS HIGHSCORE: '+ highscore);
     });
-    //open_player_name_modal();
+    socket.on('myDestroyedShips', (x,y)=>{
+        document.getElementById('myField' + x + y).style.backgroundColor = '#0DEAD0';
+    });
+    socket.on('opponentDestroyedShips', (x,y)=>{
+        document.getElementById('enemField' + x + y).style.backgroundColor = '#0DEAD0';
+    });
+    socket.on('refreshName', name=>{
+        $("#opponentLabel").html(name);
+    });
+    open_player_name_modal();
 });
 
 function fire(x, y) {
@@ -84,27 +97,31 @@ function open_player_name_modal() {
 }
 
 function set_player_name() {
-    let player1Element = document.getElementById('player1');
-    let player2Element = document.getElementById('player2');
-
+    let myLabel = document.getElementById('myLabelInput');
     // We have to reset the form errors with custom validity
-    player1Element.setCustomValidity('');
-    player2Element.setCustomValidity('');
+    myLabel.setCustomValidity('');
 
-    if (player1Element.checkValidity() && player2Element.checkValidity()) {
-        let player1Name = document.getElementById('player1').value.trim();
-        let player2Name = document.getElementById('player2').value.trim();
-
-        if (player1Name.length == 0) {
-            player1Element.setCustomValidity('Spieler1 benötigt einen Namen');
-        } else if (player2Name.length == 0) {
-            player2Element.setCustomValidity('Spieler2 benötigt einen Namen');
-        } else if (player1Name === player2Name) {
-            player2Element.setCustomValidity('Spieler2 hat den gleichen Namen wie Spieler1');
+    if (myLabel.checkValidity()) {
+        let myLabelName = myLabel.value.trim();
+        if (myLabelName.length == 0) {
+            myLabel.setCustomValidity('Du brauchst einen Namen');
         } else {
-            document.getElementById('player1Label').innerHTML = 'Spieler1: ' + player1Name;
-            document.getElementById('player2Label').innerHTML = 'Spieler2: ' + player2Name;
+            document.getElementById('myLabel').innerHTML = myLabelName;
             $('#playerName').modal('hide');
+            socket.emit('setPlayerName', myLabelName);
         }
     }
+}
+
+function sizeContent() {
+    let newHeight = $("html").height()*0.8 + "px";
+    $(".wrapper").css("height", newHeight);
+    let marginLeft = ($("html").width()*0.5 - $(".table-bordered").height()*0.5) + "px";
+
+    //TODO: flexibel machen!
+
+    document.getElementById("tablePlayer1").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important"); 
+    document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
+    $("#changePlayername").css("margin-left", marginLeft);
+    $(".namesOfPlayer").css("margin-left", marginLeft);
 }

@@ -3,6 +3,7 @@ const Coordinate = require(__dirname + '/coordinate');
 module.exports = class Ship {
     constructor() {
         this.coordinates = [];
+        this.hitCoordinates = [];
     }
 
     addCoordinate(coordinate) {
@@ -12,6 +13,18 @@ module.exports = class Ship {
     removeCoordinate(coordinate) {
         this.coordinates = this.coordinates.filter(
             (otherCoordinate) => { return !Coordinate.equal(otherCoordinate, coordinate); });
+    }
+
+    addHitCoordinate(possibleHit){
+        this.coordinates.forEach(coordinate => {
+            if(Coordinate.equal(possibleHit, coordinate)){
+                this.hitCoordinates.push(Coordinate.copy(possibleHit));
+            }
+        });
+    }
+
+    isDestroyed(){
+        return this.coordinates.length <= this.hitCoordinates.length;
     }
 
     hasCoordinates() {
