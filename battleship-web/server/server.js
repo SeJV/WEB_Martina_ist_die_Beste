@@ -13,6 +13,9 @@ const publicDirectory = path.join(__dirname, '/../client/public/');
 let player1Socket;
 let player2Socket;
 
+let player1Ships;
+let player2Ships;
+
 let player1Field;
 let player2Field;
 
@@ -76,8 +79,11 @@ io.on('connection', function (socket) {
     else if (!player2Socket) {
         player2Socket = socket;
         if (!player1Field && !player2Field) {
-            player1Field = shipplacement.generateShipPlacement();
-            player2Field = shipplacement.generateShipPlacement();
+            player1Ships = shipplacement.generateShipPlacement();
+            player2Ships = shipplacement.generateShipPlacement();
+
+            shiplogic.addShips(player1Field, player1Ships);
+            shiplogic.addShips(player2Field, player2Ships);
         }
         player1Socket.emit('myShips', player1Field);
         player2Socket.emit('myShips', player2Field);

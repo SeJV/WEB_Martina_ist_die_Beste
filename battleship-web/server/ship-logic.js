@@ -11,13 +11,11 @@ function createField() {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 }
 
-function destroyedShips(playerField, opponentsShots){
-    destroyedShips = createField();
-    for(let y = 0; y < 10; y++){
-        for(let x = 0; x < 10; x++){
-
-        }
-    }
+function addShips(field, ships){
+    ships.forEach(function(ship){
+        ship.allCoordinates().forEach(function(coordinate){
+        });
+    });
 }
 
 function hasWon(opponentsField, myShots){
@@ -33,5 +31,6 @@ function hasWon(opponentsField, myShots){
 
 module.exports = {
     createField: createField,
-    hasWon:hasWon,
+    hasWon: hasWon,
+    addShips: addShips,
 };

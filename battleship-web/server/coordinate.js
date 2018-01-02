@@ -7,4 +7,13 @@ module.exports = class Coordinate {
     static equal(lCoordinate, rCoordinate) {
         return lCoordinate.x == rCoordinate.x && lCoordinate.y == rCoordinate.y;
     }
+
+    get xCoordinate(){
+        return this.x;
+    }
+
+    get yCoordinate(){
+        return this.y;
+    }
+
 };
