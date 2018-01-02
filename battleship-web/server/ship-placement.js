@@ -19,7 +19,7 @@ function generateShipPlacement() {
     let ships = [];
     let field = shipLogic.createField();
 
-    while(tryToGenerateShipPlacement(field, ships, shipTypes.slice()))
+    while(!tryToGenerateShipPlacement(field, ships, shipTypes.slice()))
     {
         //reset
         ships = [];
@@ -38,7 +38,6 @@ function tryToGenerateShipPlacement(field, ships, shipTypes) {
     let ship = tryToAddShip(field, shipType, TRY_COUNT);
     if(ship.hasCoordinates()) {
         ships.push(ship);
-
         return tryToGenerateShipPlacement(field, ships, shipTypes);
     } else {
         return false;

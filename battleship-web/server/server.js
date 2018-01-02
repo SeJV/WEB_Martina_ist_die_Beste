@@ -1,3 +1,4 @@
+const Coordinate = require(__dirname + '/coordinate');
 const shipplacement = require(__dirname + '/ship-placement');
 const shiplogic = require(__dirname + '/ship-logic');
 const express = require('express');
@@ -22,22 +23,17 @@ let player2Field;
 let player1Score = 0;
 let player2Score = 0;
 
-let player1FieldOfSafedShots = shiplogic.createField();
-let player2FieldOfSafedShots = shiplogic.createField();
-
 const PLAYER_1_TURN = 1;
 const PLAYER_2_TURN = 2;
 
-const SHOT_IN_WATER = 1;
-const ShOT_ON_SHIP = 2;
 let turn = PLAYER_1_TURN;
 
-router.use(function (req, res, next) {
+router.use((req, res, next) => {
     console.log('/' + req.method);
     next();
 });
 
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
     res.sendFile(path.join(publicDirectory, 'battleship.html'));
 });
 
@@ -45,7 +41,7 @@ app.use(servestatic(publicDirectory));
 
 app.use('/', router);
 
-io.on('connection', function (socket) {
+io.on('connection', socket => {
     console.log('a user connected');
     if (!player1Socket) {
         player1Socket = socket;
@@ -53,24 +49,22 @@ io.on('connection', function (socket) {
             console.log('Player1 disconnected');
             player1Socket = undefined;
         });
-        player1Socket.on('fire', function (x, y) {
+        player1Socket.on('fire', (x, y) => {
             if (player1Socket && player2Socket && turn === PLAYER_1_TURN && !gameOver()) {
                 if (player2Field[y][x]) {
                     player1Socket.emit('fireResult', true);
                     player2Socket.emit('fireResultEnemy', x, y, true);
-                    turn = PLAYER_1_TURN;
-                    emitTurn();
-                    saveFireOfPlayer1(x, y, true);
+                    addHit(player2Ships, new Coordinate(x,y));
+                    markDestroyedShips();
                 }
                 else {
                     player1Socket.emit('fireResult', false);
                     player2Socket.emit('fireResultEnemy', x, y, false);
                     turn = PLAYER_2_TURN;
                     emitTurn();
-                    saveFireOfPlayer1(x, y, false);
                 }
+                player1Score++;
             }
-            player1Score++;
             if(gameOver()){
                 emitWinnerAndLoser();
             }
@@ -82,36 +76,35 @@ io.on('connection', function (socket) {
             player1Ships = shipplacement.generateShipPlacement();
             player2Ships = shipplacement.generateShipPlacement();
 
-            shiplogic.addShips(player1Field, player1Ships);
-            shiplogic.addShips(player2Field, player2Ships);
+            player1Field = shiplogic.addShips(player1Ships);
+            player2Field = shiplogic.addShips(player2Ships);
         }
         player1Socket.emit('myShips', player1Field);
         player2Socket.emit('myShips', player2Field);
 
         emitTurn();
 
-        player2Socket.on('disconnect', function () {
+        player2Socket.on('disconnect', ()=>{
             console.log('Player2 disconnected');
             player2Socket = undefined;
         });
-        player2Socket.on('fire', function (x, y) {
+
+        player2Socket.on('fire', (x, y) => {
             if (player1Socket && player2Socket && turn === PLAYER_2_TURN && !gameOver()) {
                 if (player1Field[y][x]) {
                     player1Socket.emit('fireResultEnemy', x, y, true);
                     player2Socket.emit('fireResult', true);
-                    turn = PLAYER_2_TURN;
-                    emitTurn();
-                    saveFireOfPlayer2(x, y, true);
+                    addHit(player1Ships, new Coordinate(x,y));
+                    markDestroyedShips();
                 }
                 else {
                     player1Socket.emit('fireResultEnemy', x, y, false);
                     player2Socket.emit('fireResult', false);
                     turn = PLAYER_1_TURN;
                     emitTurn();
-                    saveFireOfPlayer2(x, y, false);
                 }
+                player2Score++;
             }
-            player2Score++;
             if(gameOver()){
                 emitWinnerAndLoser();
             }
@@ -119,7 +112,7 @@ io.on('connection', function (socket) {
     }
 });
 
-http.listen(config.server.port, config.server.host, function () {
+http.listen(config.server.port, config.server.host, () => {
     console.log('Live at Port ' + config.server.port);
 });
 
@@ -135,10 +128,10 @@ function emitTurn() {
 }
 
 function player1HasWon(){
-    return shiplogic.hasWon(player2Field, player1FieldOfSafedShots);
+    return shiplogic.hasWon(player2Ships);
 }
 function player2HasWon(){
-    return shiplogic.hasWon(player1Field, player2FieldOfSafedShots);
+    return shiplogic.hasWon(player1Ships);
 }
 
 function gameOver(){
@@ -156,19 +149,28 @@ function emitWinnerAndLoser(){
     }
 }
 
-function saveFireOfPlayer1(x, y, wasHit) {
-    if (wasHit) {
-        player1FieldOfSafedShots[y][x] = 2;
-    }
-    else {
-        player1FieldOfSafedShots[y][x] = 1;
-    }
+function addHit(opponentShips, possibleHit) {
+    opponentShips.forEach(ship=>{
+        ship.addHitCoordinate(possibleHit);
+    });
 }
-function saveFireOfPlayer2(x, y, wasHit) {
-    if (wasHit) {
-        player2FieldOfSafedShots[y][x] = 2;
-    }
-    else {
-        player2FieldOfSafedShots[y][x] = 1;
-    }
+
+function markDestroyedShips(){
+    player1Ships.forEach(ship=>{
+        if(ship.isDestroyed()){
+            ship.allCoordinates.forEach(coordinate=>{
+                player1Socket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                player2Socket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+            });
+        }
+    });
+    player2Ships.forEach(ship=>{
+        if(ship.isDestroyed()){
+            ship.allCoordinates.forEach(coordinate=>{
+                player2Socket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                player1Socket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+            });
+        }
+    });
 }
+

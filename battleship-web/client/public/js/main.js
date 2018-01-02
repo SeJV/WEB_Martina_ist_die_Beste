@@ -4,7 +4,7 @@ $(document).ready(function () {
     socket = io();
     $('#tablePlayer1').html(tabler(1));
     $('#tablePlayer2').html(tabler(2));
-    socket.on('fireResult', function (result) {
+    socket.on('fireResult', result => {
         if (result) {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
         }
@@ -12,7 +12,7 @@ $(document).ready(function () {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#81C1E5';
         }
     });
-    socket.on('fireResultEnemy', function (x, y, result) {
+    socket.on('fireResultEnemy', (x, y, result) =>{
         if (result) {
             document.getElementById('myField' + x + y).style.backgroundColor = '#6D9A9A';
         }
@@ -20,7 +20,7 @@ $(document).ready(function () {
             document.getElementById('myField' + x + y).style.backgroundColor = '#6DB9DA';
         }
     });
-    socket.on('myShips', function (playerField) {
+    socket.on('myShips', playerField=> {
         for (x = 0; x < 10; x++) {
             for (y = 0; y < 10; y++) {
                 if (playerField[y][x]) {
@@ -29,7 +29,7 @@ $(document).ready(function () {
             }
         }
     });
-    socket.on('playerTurn', (isYourTurn) => {
+    socket.on('playerTurn', isYourTurn => {
         if (isYourTurn) {
             $('#turn').html('It\'s your turn!');
         }
@@ -37,13 +37,19 @@ $(document).ready(function () {
             $('#turn').html('Wait for opponent');
         }
     });
-    socket.on('won',(highscore)=>{
+    socket.on('won',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('YOUR HIGHSCORE: ' + highscore);
     });
-    socket.on('lost',(highscore)=>{
+    socket.on('lost',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'red';
         $('#highscore').html('OPPONENTS HIGHSCORE: '+ highscore);
+    });
+    socket.on('myDestroyedShips', (x,y)=>{
+        document.getElementById('myField' + x + y).style.backgroundColor = '#0DEAD0';
+    });
+    socket.on('opponentDestroyedShips', (x,y)=>{
+        document.getElementById('enemField' + x + y).style.backgroundColor = '#0DEAD0';
     });
     //open_player_name_modal();
 });
