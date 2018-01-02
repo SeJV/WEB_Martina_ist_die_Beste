@@ -15,5 +15,4 @@ module.exports = class Coordinate {
     get yCoordinate(){
         return this.y;
     }
-
 };
