@@ -22,24 +22,19 @@
    <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body id="myBody">
+
   <main>
-    <div>
-      <h5 id="player1Label"></h5>
-      <h5 id="player2Label"></h5>
-      <h6 id="turn"></h6>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
-        <table class="table table-bordered" id = "tablePlayer1">
-        </table>
+      <div class="wrapper">
+        <h5 id="myLabel" class="namesOfPlayer">DEIN NAME</h5>
+          <table class="table table-bordered" id = "tablePlayer1">
+          </table>
+        <h5 id="opponentLabel" class="namesOfPlayer">Warten auf Gegner Name</h5>
+          <table class="table table-bordered" id = "tablePlayer2">
+          </table>
       </div>
-      <div class="col-md-6">
-        <table class="table table-bordered" id = "tablePlayer2">
-        </table>
-      </div>
-    </div>
-    <button type="button" class="btn btn-primary" onclick="open_player_name_modal()">Spielername ändern</button>
+    <button type="button" class="btn btn-primary" onclick="open_player_name_modal()" id="changePlayername">Spielername ändern</button>
   </main>
+
   <div class="modal fade" id="playerName" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -49,12 +44,8 @@
         <div class="modal-body">
           <form>
             <div class="form-group">
-              <label for="player1" class="col-form-label">Spieler1:</label>
-              <input type="text" class="form-control" id="player1" autofocus/>
-            </div>
-            <div class="form-group">
-              <label for="player2" class="col-form-label">Spieler2:</label>
-              <input type="text" class="form-control" id="player2" />
+              <label for="myLabelInput" class="col-form-label">Dein Name:</label>
+              <input type="text" class="form-control" id="myLabelInput" autofocus/>
             </div>
           </form>
         </div>
@@ -66,5 +57,4 @@
   </div>       
   <h2 id="highscore"></h2>
 </body>
-
 </html>

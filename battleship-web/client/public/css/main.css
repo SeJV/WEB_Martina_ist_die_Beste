@@ -1,17 +1,33 @@
-body{
+html, body{
     font-family: 'Oxygen', sans-serif;
-}
+    height: 100%;
+}    
 
 .table-bordered {
-    width: 90% !important;
-    height: 0 !important;
-    overflow: hidden;
+    height: 40% !important;
+    width: 0 !important;
+}
+
+#tablePlayer1 {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#tablePlayer2 {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 td{
     padding: 0 !important;
     width: 10% !important;
     padding-bottom: 10% !important;
+}
+.wrapper{
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 15px;
 }
 
 .spielfeld1{
@@ -25,8 +41,4 @@ td{
 }
 .spielfeld2:hover{
     background-color: #cbc693;
-}
-
-body{
-    margin: 5%;
 }

@@ -14,6 +14,9 @@ const publicDirectory = path.join(__dirname, '/../client/public/');
 let player1Socket;
 let player2Socket;
 
+let player1Name;
+let player2Name;
+
 let player1Ships;
 let player2Ships;
 
@@ -49,8 +52,14 @@ io.on('connection', socket => {
             console.log('Player1 disconnected');
             player1Socket = undefined;
         });
+        player1Socket.on('setPlayerName', playerName=>{
+            player1Name = playerName;
+            if(isAbleToPlay()){
+                refreshNames();
+            }
+        });
         player1Socket.on('fire', (x, y) => {
-            if (player1Socket && player2Socket && turn === PLAYER_1_TURN && !gameOver()) {
+            if (isAbleToPlay() && PLAYER_1_TURN == turn) {
                 if (player2Field[y][x]) {
                     player1Socket.emit('fireResult', true);
                     player2Socket.emit('fireResultEnemy', x, y, true);
@@ -88,9 +97,14 @@ io.on('connection', socket => {
             console.log('Player2 disconnected');
             player2Socket = undefined;
         });
-
+        player2Socket.on('setPlayerName', playerName=>{
+            player2Name = playerName;
+            if(isAbleToPlay()){
+                refreshNames();
+            }
+        });
         player2Socket.on('fire', (x, y) => {
-            if (player1Socket && player2Socket && turn === PLAYER_2_TURN && !gameOver()) {
+            if (isAbleToPlay()&&PLAYER_2_TURN === turn) {
                 if (player1Field[y][x]) {
                     player1Socket.emit('fireResultEnemy', x, y, true);
                     player2Socket.emit('fireResult', true);
@@ -135,6 +149,9 @@ function player2HasWon(){
 }
 
 function gameOver(){
+    if(!player1Ships || !player2Ships){
+        return true;
+    }
     return (player1HasWon() || player2HasWon());
 }
 
@@ -173,4 +190,15 @@ function markDestroyedShips(){
         }
     });
 }
+function isAbleToPlay(){
+    return player1Socket
+        &&player2Socket
+        &&!gameOver()
+        &&player1Name
+        &&player2Name;
+}
 
+function refreshNames() {
+    player1Socket.emit('refreshName' , player2Name);
+    player2Socket.emit('refreshName' , player1Name);
+}
