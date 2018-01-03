@@ -6,8 +6,8 @@ module.exports = class Highscore {
     }
 
     get scores() {
-        let copyScores = this._scores;
-        return copyScores;
+        let scores = this._scores.slice();
+        return scores;
     }
 
     addScore(newScore) {
@@ -20,15 +20,18 @@ module.exports = class Highscore {
                 score.score = newScore.score;
             }
         }
+        _sort();
     }
 
     readHighscore(path) {
         try {
             let scores = fs.readFileSync(path, 'utf8');
             this._scores = JSON.parse(scores);
+            this._sort()
 
             return true;
         } catch(err) {
+            console.log(err);
             return false;
         }
     }
@@ -41,5 +44,11 @@ module.exports = class Highscore {
         } catch(err) {
             return false;
         }
+    }
+
+    _sort() {
+        this._scores = this._scores.sort( (lScore, rScore) => {
+            return rScore._score - lScore._score;
+        });
     }
 };

@@ -5,16 +5,17 @@ module.exports = class Score {
     }
 
     get name() {
-        let copyName = this._name;
-        return copyName;
+        let name =  this._name;
+        return name;
     }
 
     get score() {
-        let copyScore = this._score;
-        return copyScore;
+        let score = this._score;
+        return score;
     }
 
     set score(newScore) {
+
         this._score = newScore;
     }
 };
