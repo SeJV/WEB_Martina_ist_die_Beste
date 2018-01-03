@@ -1,9 +1,13 @@
-const score = require(__dirname + '/score');
 const fs = require('fs');
 
 module.exports = class Highscore {
     constructor() {
         this._scores = [];
+    }
+
+    get scores() {
+        let copyScores = this._scores;
+        return copyScores;
     }
 
     addScore(newScore) {
@@ -38,4 +42,4 @@ module.exports = class Highscore {
             return false;
         }
     }
-}
+};

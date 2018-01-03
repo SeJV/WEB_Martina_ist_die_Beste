@@ -17,4 +17,4 @@ module.exports = class Score {
     set score(newScore) {
         this._score = newScore;
     }
-}
+};

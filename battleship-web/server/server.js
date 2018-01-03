@@ -1,4 +1,5 @@
 const Coordinate = require(__dirname + '/coordinate');
+const highscore = require(__dirname + '/highscore');
 const shipplacement = require(__dirname + '/ship-placement');
 const shiplogic = require(__dirname + '/ship-logic');
 const express = require('express');
@@ -38,6 +39,16 @@ router.use((req, res, next) => {
 
 router.get('/', (req, res) => {
     res.sendFile(path.join(publicDirectory, 'battleship.html'));
+});
+
+router.get('/api/v1/highscore', (req, res) => {
+    let currentHighscore = new highscore();
+    if(currentHighscore.readHighscore(__dirname + '/highscore.json')) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(currentHighscore.scores));
+    } else {
+        res.status(500).send('Failed to read the highscore');
+    }
 });
 
 app.use(servestatic(publicDirectory));
