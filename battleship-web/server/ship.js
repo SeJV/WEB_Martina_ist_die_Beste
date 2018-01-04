@@ -1,37 +1,37 @@
-const Coordinate = require(__dirname + '/coordinate');
+const coordinate = require(__dirname + '/coordinate');
 
 module.exports = class Ship {
     constructor() {
-        this.coordinates = [];
-        this.hitCoordinates = [];
+        this._coordinates = [];
+        this._hitCoordinates = [];
     }
 
     addCoordinate(coordinate) {
-        this.coordinates.push(coordinate);
+        this._coordinates.push(coordinate);
     }
 
     removeCoordinate(coordinate) {
-        this.coordinates = this.coordinates.filter(
-            (otherCoordinate) => { return !Coordinate.equal(otherCoordinate, coordinate); });
+        this._coordinates = this._coordinates.filter(
+            (otherCoordinate) => { return !coordinate.equal(otherCoordinate, coordinate); });
     }
 
     addHitCoordinate(possibleHit){
-        this.coordinates.forEach(coordinate => {
-            if(Coordinate.equal(possibleHit, coordinate)){
-                this.hitCoordinates.push(Coordinate.copy(possibleHit));
+        this._coordinates.forEach(coordinate => {
+            if(coordinate.equal(possibleHit, coordinate)){
+                this._hitCoordinates.push(coordinate.copy(possibleHit));
             }
         });
     }
 
     isDestroyed(){
-        return this.coordinates.length <= this.hitCoordinates.length;
+        return this._coordinates.length <= this._hitCoordinates.length;
     }
 
     hasCoordinates() {
-        return this.coordinates.length > 0;
+        return this._coordinates.length > 0;
     }
 
     get allCoordinates() {
-        return this.coordinates;
+        return this._coordinates;
     }
 };
