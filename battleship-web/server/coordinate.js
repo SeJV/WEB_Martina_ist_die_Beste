@@ -1,11 +1,11 @@
 module.exports = class Coordinate {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
     }
 
     static equal(lCoordinate, rCoordinate) {
-        return lCoordinate.x == rCoordinate.x && lCoordinate.y == rCoordinate.y;
+        return lCoordinate.xCoordinate == rCoordinate.xCoordinate && lCoordinate.yCoordinate == rCoordinate.yCoordinate;
     }
 
     static copy(coordinate){
@@ -13,11 +13,10 @@ module.exports = class Coordinate {
     }
 
     get xCoordinate(){
-        return this.x;
+        return this._x;
     }
 
     get yCoordinate(){
-        return this.y;
+        return this._y;
     }
-
 };
