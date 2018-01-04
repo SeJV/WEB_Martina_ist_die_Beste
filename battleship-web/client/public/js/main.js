@@ -58,7 +58,7 @@ $(document).ready(function () {
     socket.on('refreshName', name=>{
         $("#opponentLabel").html(name);
     });
-    open_player_name_modal();
+    //open_player_name_modal();
 });
 
 function fire(x, y) {
@@ -72,7 +72,7 @@ function tabler(playerNumber) {
         str += '<tr>';
         for (let j = 0; j < 10; j++) {
             if (playerNumber == 1) {
-                str += '<td class="spielfeld' + playerNumber + '" id= myField' + i + j + '></td>';
+                str += '<td ondrop="drop(event)" ondragover="allowDrop(event)" class="spielfeld' + playerNumber + '" id= myField' + i + j + '></td>';
             }
             else {
                 str += '<td onclick="fire(' + i + ',' + j + ')" class="spielfeld' + playerNumber + '" id= enemField' + i + j + '></td>';
@@ -82,6 +82,7 @@ function tabler(playerNumber) {
     }
     return str;
 }
+
 $('#playerName').modal({
     show: true,
     keyboard: false,
@@ -124,4 +125,22 @@ function sizeContent() {
     document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
     $("#changePlayername").css("margin-left", marginLeft);
     $(".namesOfPlayer").css("margin-left", marginLeft);
+}
+
+//Drag and Drop:
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    //data: id of DropItem
+    var data = ev.dataTransfer.getData("text");
+    //ev.target: ziel des Drops
+    $("#" + ev.target.id).css('background-color', 'blue');
 }
