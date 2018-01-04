@@ -39,11 +39,10 @@ module.exports = class Highscore {
                 this.addScore(new score(entry['name'], entry['score']));
             });
 
-            this._sort()
+            this._sort();
 
             return true;
         } catch(err) {
-            console.log(err);
             return false;
         }
     }
