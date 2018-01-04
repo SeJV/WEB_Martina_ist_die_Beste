@@ -1,5 +1,8 @@
 const Coordinate = require(__dirname + '/coordinate');
-const highscore = require(__dirname + '/highscore');
+const Highscore = require(__dirname + '/highscore');
+const highscore = new Highscore();
+const highscorePath = __dirname + '/highscore.json';
+const score = require(__dirname + '/score');
 const shipplacement = require(__dirname + '/ship-placement');
 const shiplogic = require(__dirname + '/ship-logic');
 const express = require('express');
@@ -24,13 +27,16 @@ let player2Ships;
 let player1Field;
 let player2Field;
 
+let player1FieldOfShots;
+let player2FieldOfShots;
+
 let player1Score = 0;
 let player2Score = 0;
 
-const PLAYER_1_TURN = 1;
-const PLAYER_2_TURN = 2;
+const PLAYER_1 = 1;
+const PLAYER_2 = 2;
 
-let turn = PLAYER_1_TURN;
+let turn = PLAYER_1;
 
 router.use((req, res, next) => {
     console.log('/' + req.method);
@@ -43,7 +49,7 @@ router.get('/', (req, res) => {
 
 router.get('/api/v1/highscore', (req, res) => {
     let currentHighscore = new highscore();
-    if(currentHighscore.readHighscore(__dirname + '/highscore.json')) {
+    if(currentHighscore.readHighscore(highscorePath)) {
         res.setHeader('Content-Type', 'application/json');
         res.send(currentHighscore.scoresJSON);
     } else {
@@ -70,7 +76,7 @@ io.on('connection', socket => {
             }
         });
         player1Socket.on('fire', (x, y) => {
-            if (isAbleToPlay() && PLAYER_1_TURN == turn) {
+            if (PLAYER_1 == turn && isAbleToPlay() && !player1FieldOfShots[y][x]) {
                 if (player2Field[y][x]) {
                     player1Socket.emit('fireResult', true);
                     player2Socket.emit('fireResultEnemy', x, y, true);
@@ -80,13 +86,14 @@ io.on('connection', socket => {
                 else {
                     player1Socket.emit('fireResult', false);
                     player2Socket.emit('fireResultEnemy', x, y, false);
-                    turn = PLAYER_2_TURN;
+                    turn = PLAYER_2;
                     emitTurn();
                 }
+                player1FieldOfShots[y][x] = 1;
                 player1Score++;
             }
-            if(gameOver()){
-                emitWinnerAndLoser();
+            if(gameOver()){                
+               emitWinnerAndLoser();                
             }
         });
     }
@@ -96,9 +103,13 @@ io.on('connection', socket => {
             player1Ships = shipplacement.generateShipPlacement();
             player2Ships = shipplacement.generateShipPlacement();
 
+            player1FieldOfShots = shiplogic.createField();
+            player2FieldOfShots = shiplogic.createField();
+
             player1Field = shiplogic.addShips(player1Ships);
             player2Field = shiplogic.addShips(player2Ships);
         }
+        makeRestartPossible();
         player1Socket.emit('myShips', player1Field);
         player2Socket.emit('myShips', player2Field);
 
@@ -115,7 +126,7 @@ io.on('connection', socket => {
             }
         });
         player2Socket.on('fire', (x, y) => {
-            if (isAbleToPlay()&&PLAYER_2_TURN === turn) {
+            if (PLAYER_2 === turn && isAbleToPlay() && !player2FieldOfShots[y][x]) {
                 if (player1Field[y][x]) {
                     player1Socket.emit('fireResultEnemy', x, y, true);
                     player2Socket.emit('fireResult', true);
@@ -125,9 +136,10 @@ io.on('connection', socket => {
                 else {
                     player1Socket.emit('fireResultEnemy', x, y, false);
                     player2Socket.emit('fireResult', false);
-                    turn = PLAYER_1_TURN;
+                    turn = PLAYER_1;
                     emitTurn();
                 }
+                player2FieldOfShots[y][x] = 1;
                 player2Score++;
             }
             if(gameOver()){
@@ -142,15 +154,46 @@ http.listen(config.server.port, config.server.host, () => {
 });
 
 function emitTurn() {
-    if (turn == PLAYER_1_TURN) {
+    if (turn == PLAYER_1) {
         player1Socket.emit('playerTurn', true);
         player2Socket.emit('playerTurn', false);
     }
     else {
         player1Socket.emit('playerTurn', false);
-        player2Socket.emit('playerTurn', true);
+        player2Socket.emit('playerTurn', true);      
     }
 }
+
+function makeRestartPossible() {
+    player2Socket.on('restart', ()=>{
+        resetShipsAndScoreAndField();
+    });
+    player1Socket.on('restart', ()=>{
+        resetShipsAndScoreAndField();
+    });
+}
+
+function resetShipsAndScoreAndField(){
+    player1Ships = shipplacement.generateShipPlacement();
+    player2Ships = shipplacement.generateShipPlacement();
+    player1Field = shiplogic.addShips(player1Ships);
+    player2Field = shiplogic.addShips(player2Ships);
+    player1Score = 0;
+    player2Score = 0;
+    player1FieldOfShots = shiplogic.createField();
+    player2FieldOfShots = shiplogic.createField();
+
+    player1Socket.emit('resetField');
+    player2Socket.emit('resetField');
+
+    player1Socket.emit('myShips', player1Field);
+    player2Socket.emit('myShips', player2Field);
+
+    turn = ((Math.random()*2 +1)| 0); //int between 1 and 2
+    emitTurn();
+}
+
+
 
 function player1HasWon(){
     return shiplogic.hasWon(player2Ships);
@@ -167,14 +210,23 @@ function gameOver(){
 }
 
 function emitWinnerAndLoser(){
+    let winnerName;
+    let winnerScore;
     if(player1HasWon()){
         player1Socket.emit('won', player1Score);
         player2Socket.emit('lost', player1Score);
+        winnerName = player1Name;
+        winnerScore = player1Score;
     }
     else{
         player1Socket.emit('lost', player2Score);
         player2Socket.emit('won', player2Score);
+        winnerName = player2Name;
+        winnerScore = player2Score;
     }
+    highscore.readHighscore(highscorePath);
+    highscore.addScore(new score(winnerName, winnerScore));
+    highscore.writeHighscore(highscorePath);
 }
 
 function addHit(opponentShips, possibleHit) {

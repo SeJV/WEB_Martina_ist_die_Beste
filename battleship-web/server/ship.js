@@ -16,8 +16,8 @@ module.exports = class Ship {
     }
 
     addHitCoordinate(possibleHit){
-        this._coordinates.forEach(coordinate => {
-            if(coordinate.equal(possibleHit, coordinate)){
+        this._coordinates.forEach(shipCoordinate => {
+            if(coordinate.equal(possibleHit, shipCoordinate)){
                 this._hitCoordinates.push(coordinate.copy(possibleHit));
             }
         });

@@ -44,10 +44,12 @@ $(document).ready(function () {
     socket.on('won',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('YOUR HIGHSCORE: ' + highscore);
+        $('#resetGame').css('visibility', 'visible');
     });
     socket.on('lost',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'red';
         $('#highscore').html('OPPONENTS HIGHSCORE: '+ highscore);
+        $('#resetGame').css('visibility', 'visible');
     });
     socket.on('myDestroyedShips', (x,y)=>{
         document.getElementById('myField' + x + y).style.backgroundColor = '#0DEAD0';
@@ -58,7 +60,14 @@ $(document).ready(function () {
     socket.on('refreshName', name=>{
         $("#opponentLabel").html(name);
     });
-    //open_player_name_modal();
+    socket.on('resetField', ()=>{
+        $('#tablePlayer1').html(tabler(1));
+        $('#tablePlayer2').html(tabler(2));
+        document.getElementById('myBody').style.backgroundColor = 'white';
+        $('#highscore').html('');
+        $('#resetGame').css('visibility', 'hidden');
+    });
+    open_player_name_modal();
 });
 
 function fire(x, y) {
@@ -95,6 +104,10 @@ function open_player_name_modal() {
         keyboard: false,
         backdrop: 'static'
     });
+}
+
+function reset_the_game(){
+    socket.emit('restart');
 }
 
 function set_player_name() {
