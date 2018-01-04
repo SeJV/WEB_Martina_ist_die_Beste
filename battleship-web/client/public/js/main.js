@@ -11,22 +11,22 @@ $(document).ready(function () {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
         }
         else {
-            document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#81C1E5';
+            document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#0ab2bd';
         }
     });
     socket.on('fireResultEnemy', (x, y, result) =>{
         if (result) {
-            document.getElementById('myField' + x + y).style.backgroundColor = '#6D9A9A';
+            document.getElementById('myField' + x + y).style.backgroundColor = '#034044';
         }
         else {
-            document.getElementById('myField' + x + y).style.backgroundColor = '#6DB9DA';
+            document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
         }
     });
     socket.on('myShips', playerField=> {
         for (x = 0; x < 10; x++) {
             for (y = 0; y < 10; y++) {
                 if (playerField[y][x]) {
-                    document.getElementById('myField' + x + y).style.backgroundColor = '#414B37';
+                    document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
                 }
             }
         }
@@ -52,10 +52,10 @@ $(document).ready(function () {
         $('#resetGame').css('visibility', 'visible');
     });
     socket.on('myDestroyedShips', (x,y)=>{
-        document.getElementById('myField' + x + y).style.backgroundColor = '#0DEAD0';
+        document.getElementById('myField' + x + y).style.backgroundColor = '#008eb7';
     });
     socket.on('opponentDestroyedShips', (x,y)=>{
-        document.getElementById('enemField' + x + y).style.backgroundColor = '#0DEAD0';
+        document.getElementById('enemField' + x + y).style.backgroundColor = '#008eb7';
     });
     socket.on('refreshName', name=>{
         $("#opponentLabel").html(name);

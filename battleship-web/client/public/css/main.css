@@ -22,6 +22,7 @@ td{
     padding: 0 !important;
     width: 10% !important;
     padding-bottom: 10% !important;
+    border:1px solid black !important;
 }
 .wrapper{
     display: block;
@@ -31,14 +32,11 @@ td{
 }
 
 .spielfeld1{
-    background-color: #c4e0a4;
-}
-.spielfeld1:hover{
-    background-color: #93ae75;
+    background-color: #07737a;
 }
 .spielfeld2{
-    background-color: #fff9c4;
+    background-color: #07737a;
 }
 .spielfeld2:hover{
-    background-color: #cbc693;
+    background-color: red;
 }
