@@ -5,17 +5,14 @@ module.exports = class Score {
     }
 
     get name() {
-        let name =  this._name;
-        return name;
+        return this._name;
     }
 
     get score() {
-        let score = this._score;
-        return score;
+        return this._score;
     }
 
     set score(newScore) {
-
         this._score = newScore;
     }
 };

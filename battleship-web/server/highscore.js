@@ -1,32 +1,44 @@
 const fs = require('fs');
+const score = require(__dirname + '/score');
 
 module.exports = class Highscore {
     constructor() {
-        this._scores = [];
+        this._entries = [];
     }
 
-    get scores() {
-        let scores = this._scores.slice();
-        return scores;
+    get scoresJSON() {
+        let entries = [];
+        this._entries.forEach(entry => {
+            let copy = {};
+            copy.name = entry.name;
+            copy.score = entry.score;
+            entries.push(copy);
+        });
+
+        return JSON.stringify(entries);
     }
 
-    addScore(newScore) {
-        let score = this._scores.find(score => { return score.name === newScore.name; });
+    addScore(newEntry) {
+        let entry = this._entries.find(score => { return score.name === newEntry.name; });
 
-        if(score === undefined) {
-            this._score.push(newScore);
+        if(entry === undefined) {
+            this._entries.push(newEntry);
         } else {
-            if(score.score < newScore.score) {
-                score.score = newScore.score;
+            if(entry.score < newEntry.score) {
+                entry.score = newEntry.score;
             }
         }
-        _sort();
+        this._sort();
     }
 
     readHighscore(path) {
         try {
-            let scores = fs.readFileSync(path, 'utf8');
-            this._scores = JSON.parse(scores);
+            let entries = fs.readFileSync(path, 'utf8');
+            entries = JSON.parse(entries);
+            entries.forEach(entry => {
+                this.addScore(new score(entry['name'], entry['score']));
+            });
+
             this._sort()
 
             return true;
@@ -37,7 +49,7 @@ module.exports = class Highscore {
     }
 
     writeHighscore(path) {
-        const data = JSON.stringify(this._scores);
+        const data = JSON.stringify(this._entries);
         try {
             fs.writeFileSync(path, data, 'utf8');
             return true;
@@ -47,8 +59,8 @@ module.exports = class Highscore {
     }
 
     _sort() {
-        this._scores = this._scores.sort( (lScore, rScore) => {
-            return rScore._score - lScore._score;
+        this._entries = this._entries.sort( (lEntry, rEntry) => {
+            return rEntry.score - lEntry.score;
         });
     }
 };

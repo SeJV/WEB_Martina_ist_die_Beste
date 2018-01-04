@@ -16,12 +16,12 @@ function getJSON(url, callback) {
 $(document).ready( () => {
     const host = "http://" + window.location.host;
 
-    getJSON(host + '/api/v1/heighscore', (error, data) => {
+    getJSON(host + '/api/v1/highscore', (error, data) => {
         if(error) {
             alert(error);
         } else {
             data.forEach(score => {
-                addToHighscoreTable(score['_name'], score['_score']);
+                addToHighscoreTable(score['name'], score['score']);
             });
         }
     });

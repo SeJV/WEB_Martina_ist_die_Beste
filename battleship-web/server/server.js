@@ -41,11 +41,11 @@ router.get('/', (req, res) => {
     res.sendFile(path.join(publicDirectory, 'battleship.html'));
 });
 
-router.get('/api/v1/heighscore', (req, res) => {
+router.get('/api/v1/highscore', (req, res) => {
     let currentHighscore = new highscore();
     if(currentHighscore.readHighscore(__dirname + '/highscore.json')) {
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(currentHighscore.scores));
+        res.send(currentHighscore.scoresJSON);
     } else {
         res.status(500).send('Failed to read the highscore');
     }
