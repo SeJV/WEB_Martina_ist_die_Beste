@@ -1,6 +1,5 @@
 const Coordinate = require(__dirname + '/coordinate');
 const Highscore = require(__dirname + '/highscore');
-const highscore = new Highscore();
 const highscorePath = __dirname + '/highscore.json';
 const score = require(__dirname + '/score');
 const shipplacement = require(__dirname + '/ship-placement');
@@ -224,9 +223,10 @@ function emitWinnerAndLoser(){
         winnerName = player2Name;
         winnerScore = player2Score;
     }
-    highscore.readHighscore(highscorePath);
+    let highscore = new Highscore();
+    if(!highscore.readHighscore(highscorePath)){console.log("Error reading from " + highscorePath);}
     highscore.addScore(new score(winnerName, winnerScore));
-    highscore.writeHighscore(highscorePath);
+    if(!highscore.writeHighscore(highscorePath)){console.log("Error writing in " + highscorePath);}
 }
 
 function addHit(opponentShips, possibleHit) {

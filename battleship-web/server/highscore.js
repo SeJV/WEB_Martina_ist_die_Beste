@@ -36,7 +36,9 @@ module.exports = class Highscore {
             let entries = fs.readFileSync(path, 'utf8');
             entries = JSON.parse(entries);
             entries.forEach(entry => {
-                this.addScore(new score(entry['name'], entry['score']));
+                if(entry['_name'] && entry['_score']){
+                    this.addScore(new score(entry['_name'], entry['_score']));
+                }    
             });
 
             this._sort();
