@@ -74,45 +74,14 @@ io.on('connection', socket => {
                 refreshNames();
             }
         });
-        player1Socket.on('fire', (x, y) => {
-            if (PLAYER_1 == turn && isAbleToPlay() && !player1FieldOfShots[y][x]) {
-                if (player2Field[y][x]) {
-                    player1Socket.emit('fireResult', true);
-                    player2Socket.emit('fireResultEnemy', x, y, true);
-                    addHit(player2Ships, new Coordinate(x,y));
-                    markDestroyedShips();
-                }
-                else {
-                    player1Socket.emit('fireResult', false);
-                    player2Socket.emit('fireResultEnemy', x, y, false);
-                    turn = PLAYER_2;
-                    emitTurn();
-                }
-                player1FieldOfShots[y][x] = 1;
-                player1Score++;
-            }
-            if(gameOver()){                
-               emitWinnerAndLoser();                
-            }
-        });
     }
     else if (!player2Socket) {
         player2Socket = socket;
-        if (!player1Field && !player2Field) {
-            player1Ships = shipplacement.generateShipPlacement();
-            player2Ships = shipplacement.generateShipPlacement();
 
-            player1FieldOfShots = shiplogic.createField();
-            player2FieldOfShots = shiplogic.createField();
-
-            player1Field = shiplogic.addShips(player1Ships);
-            player2Field = shiplogic.addShips(player2Ships);
-        }
         makeRestartPossible();
-        player1Socket.emit('myShips', player1Field);
-        player2Socket.emit('myShips', player2Field);
-
-        emitTurn();
+        makeGamePlayable();
+        makeFirePossible(PLAYER_1);
+        makeFirePossible(PLAYER_2);
 
         player2Socket.on('disconnect', ()=>{
             console.log('Player2 disconnected');
@@ -122,27 +91,6 @@ io.on('connection', socket => {
             player2Name = playerName;
             if(isAbleToPlay()){
                 refreshNames();
-            }
-        });
-        player2Socket.on('fire', (x, y) => {
-            if (PLAYER_2 === turn && isAbleToPlay() && !player2FieldOfShots[y][x]) {
-                if (player1Field[y][x]) {
-                    player1Socket.emit('fireResultEnemy', x, y, true);
-                    player2Socket.emit('fireResult', true);
-                    addHit(player1Ships, new Coordinate(x,y));
-                    markDestroyedShips();
-                }
-                else {
-                    player1Socket.emit('fireResultEnemy', x, y, false);
-                    player2Socket.emit('fireResult', false);
-                    turn = PLAYER_1;
-                    emitTurn();
-                }
-                player2FieldOfShots[y][x] = 1;
-                player2Score++;
-            }
-            if(gameOver()){
-                emitWinnerAndLoser();
             }
         });
     }
@@ -165,14 +113,62 @@ function emitTurn() {
 
 function makeRestartPossible() {
     player2Socket.on('restart', ()=>{
-        resetShipsAndScoreAndField();
+        makeGamePlayable();
     });
     player1Socket.on('restart', ()=>{
-        resetShipsAndScoreAndField();
+        makeGamePlayable();
     });
 }
 
-function resetShipsAndScoreAndField(){
+function makeFirePossible(playerNumber){
+    let playerSocket;
+    let opponentSocket;
+    let oppontentField;
+    let opponentShips;
+    let fieldOfShots;
+    let nextTurn;
+
+    if(playerNumber === PLAYER_1){
+        playerSocket = player1Socket;
+        opponentSocket = player2Socket
+        oppontentField = player2Field;
+        opponentShips = player2Ships;
+        fieldOfShots = player1FieldOfShots;
+        nextTurn = PLAYER_2;
+    }
+    else{
+        playerSocket = player2Socket;
+        opponentSocket = player1Socket;
+        oppontentField = player1Field;
+        opponentShips = player1Ships;
+        fieldOfShots = player2FieldOfShots;
+        nextTurn = PLAYER_1;
+    }
+    playerSocket.on('fire', (x, y) => {
+        if (playerNumber === turn && isAbleToPlay() && !fieldOfShots[y][x]) {
+            if (oppontentField[y][x]) {
+                playerSocket.emit('fireResult', true);
+                opponentSocket.emit('fireResultEnemy', x, y, true);
+                addHit(opponentShips, new Coordinate(x,y));
+                markDestroyedShips();
+            }
+            else {
+                playerSocket.emit('fireResult', false);
+                opponentSocket.emit('fireResultEnemy', x, y, false);
+                turn = nextTurn;
+                emitTurn();
+            }
+            fieldOfShots[y][x] = 1;
+            if(playerNumber === PLAYER_1)player1Score++;
+            else player2Score++;
+        }
+        if(gameOver()){
+            emitWinnerAndLoser();
+        }
+    });
+}
+
+function makeGamePlayable(){
     player1Ships = shipplacement.generateShipPlacement();
     player2Ships = shipplacement.generateShipPlacement();
     player1Field = shiplogic.addShips(player1Ships);
