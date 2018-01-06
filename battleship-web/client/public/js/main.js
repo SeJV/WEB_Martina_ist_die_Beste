@@ -22,8 +22,8 @@ $(document).ready(function () {
         }
     });
     socket.on('myShips', playerField=> {
-        for (x = 0; x < 10; x++) {
-            for (y = 0; y < 10; y++) {
+        for (y = 0; y < 10; y++) {
+            for (x = 0; x < 10; x++) {
                 if (playerField[y][x]) {
                     document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
                 }
@@ -64,7 +64,7 @@ $(document).ready(function () {
         $('#tablePlayer2').html(makeTable(2));
         document.getElementById('myBody').style.backgroundColor = 'white';
         $('#highscore').html('');
-        $('#resetGame').css('visibility', 'hidden');
+        //$('#resetGame').css('visibility', 'hidden');
     });
     open_player_name_modal();
 });
@@ -76,14 +76,14 @@ function fire(x, y) {
 
 function makeTable(playerNumber) {
     let str = '';
-    for (let i = 0; i < 10; i++) {
+    for (let y = 0; y < 10; y++) {
         str += '<tr>';
-        for (let j = 0; j < 10; j++) {
+        for (let x = 0; x < 10; x++) {
             if (playerNumber == 1) {
-                str += '<td ondrop="drop(event)" ondragover="allowDrop(event)" class="spielfeld' + playerNumber + '" id= myField' + i + j + '></td>';
+                str += '<td ondrop="drop(event)" ondragover="allowDrop(event)" class="spielfeld' + playerNumber + '" id= myField' + x + y + '></td>';
             }
             else {
-                str += '<td onclick="fire(' + i + ',' + j + ')" class="spielfeld' + playerNumber + '" id= enemField' + i + j + '></td>';
+                str += '<td onclick="fire(' + x + ',' + y + ')" class="spielfeld' + playerNumber + '" id= enemField' + x + y + '></td>';
             }
         }
         str += '</tr>';

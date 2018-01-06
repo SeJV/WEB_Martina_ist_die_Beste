@@ -21,16 +21,16 @@ function addShips(ships){
     return field;
 }
 
-function hasWon(opponentsShips){
-    let hasWon = true;
-    opponentsShips.forEach(ship=>{
-        hasWon = hasWon && ship.isDestroyed();
+function allShipsDestroyed(ships){
+    let allDestroyed = true;
+    ships.forEach(ship=>{
+        allDestroyed = allDestroyed && ship.isDestroyed();
     });
-    return hasWon;
+    return allDestroyed;
 }
 
 module.exports = {
     createField: createField,
-    hasWon: hasWon,
+    allShipsDestroyed: allShipsDestroyed,
     addShips: addShips,
 };
