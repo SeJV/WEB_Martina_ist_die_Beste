@@ -15,7 +15,6 @@ function getJSON(url, callback) {
 
 $(document).ready( () => {
     const host = "http://" + window.location.host;
-
     getJSON(host + '/api/v1/highscore', (error, data) => {
         if(error) {
             alert(error);

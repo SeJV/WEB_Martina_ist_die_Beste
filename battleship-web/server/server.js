@@ -47,7 +47,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/api/v1/highscore', (req, res) => {
-    let currentHighscore = new highscore();
+    let currentHighscore = new Highscore();
     if(currentHighscore.readHighscore(highscorePath)) {
         res.setHeader('Content-Type', 'application/json');
         res.send(currentHighscore.scoresJSON);
@@ -184,7 +184,7 @@ function makeGamePlayable(){
     player1Socket.emit('myShips', player1Field);
     player2Socket.emit('myShips', player2Field);
 
-    turn = ((Math.random()*2 +1)| 0); //int between 1 and 2
+    turn = ((Math.random()*2 +1) | 0); //int between 1 and 2
     emitTurn();
 }
 

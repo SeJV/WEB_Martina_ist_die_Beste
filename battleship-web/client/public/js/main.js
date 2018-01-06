@@ -2,10 +2,9 @@ let socket;
 let lastFire;
 $(document).ready(function () {
     socket = io();
-    $('#tablePlayer1').html(tabler(1));
-    $('#tablePlayer2').html(tabler(2));
+    $('#tablePlayer1').html(makeTable(1));
+    $('#tablePlayer2').html(makeTable(2));
     sizeContent();
-    $(window).resize(sizeContent);
     socket.on('fireResult', result => {
         if (result) {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
@@ -61,8 +60,8 @@ $(document).ready(function () {
         $("#opponentLabel").html(name);
     });
     socket.on('resetField', ()=>{
-        $('#tablePlayer1').html(tabler(1));
-        $('#tablePlayer2').html(tabler(2));
+        $('#tablePlayer1').html(makeTable(1));
+        $('#tablePlayer2').html(makeTable(2));
         document.getElementById('myBody').style.backgroundColor = 'white';
         $('#highscore').html('');
         $('#resetGame').css('visibility', 'hidden');
@@ -75,7 +74,7 @@ function fire(x, y) {
     socket.emit('fire', x, y);
 }
 
-function tabler(playerNumber) {
+function makeTable(playerNumber) {
     let str = '';
     for (let i = 0; i < 10; i++) {
         str += '<tr>';
@@ -131,8 +130,6 @@ function sizeContent() {
     let newHeight = $("html").height()*0.8 + "px";
     $(".wrapper").css("height", newHeight);
     let marginLeft = ($("html").width()*0.5 - $(".table-bordered").height()*0.5) + "px";
-
-    //TODO: flexibel machen!
 
     document.getElementById("tablePlayer1").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important"); 
     document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
