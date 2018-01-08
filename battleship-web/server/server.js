@@ -36,7 +36,9 @@ app.use(servestatic(publicDirectory));
 app.use('/', router);
 
 io.on('connection', socket => {
-    game.startGame(socket);
+    if(!game.joinLobby(socket)) {
+        socket.emit('onLobbyFull');
+    }
 });
 
 http.listen(config.server.port, config.server.host, () => {
