@@ -3,8 +3,8 @@ const Score = require(__dirname + '/score');
 const highscorePath = __dirname + '/highscore.json';
 const Player = require(__dirname + '/player');
 
-module.exports = class Game{
-    constructor(){
+module.exports = class Game {
+    constructor() {
         this._isRunning = false;
 
         this.player1 = new Player('Player1', this);
@@ -75,7 +75,7 @@ module.exports = class Game{
         this.player2.playerSocket.emit('refreshName' , this.player1.name);
     }
 
-    isAbleToShoot(player, x, y){
+    isAbleToShoot(player, x, y) {
         return player.id === this.turn && this.isAbleToPlay() && !player.fieldOfShots[y][x];
     }
 

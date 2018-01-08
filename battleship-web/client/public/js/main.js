@@ -13,27 +13,25 @@ $(document).ready(function () {
 });
 
 function initSocket() {
-    socket.on('fireResult', result => {
-        if (result) {
-            document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
-        }
-        else {
-            document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#0ab2bd';
+    socket.on('fireResult', isHit => {
+        if (isHit) {
+            markMyHit(lastFire[0] , lastFire[1]);
+        } else {
+            markMyNoHit(lastFire[0] , lastFire[1]);
         }
     });
-    socket.on('fireResultEnemy', (x, y, result) =>{
-        if (result) {
-            document.getElementById('myField' + x + y).style.backgroundColor = '#034044';
-        }
-        else {
-            document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
+    socket.on('fireResultEnemy', (x, y, isHit) =>{
+        if (isHit) {
+            markOpponentHit(x,y);
+        } else {
+            markOpponentNoHit(x,y) 
         }
     });
     socket.on('myShips', playerField => {
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 10; x++) {
                 if (playerField[y][x]) {
-                    document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
+                    markMyShips(x,y);
                 }
             }
         }
@@ -48,27 +46,27 @@ function initSocket() {
             $('#opponentLabel').css('color', 'red');
         }
     });
-    socket.on('won',highscore=>{
+    socket.on('won',highscore => {
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('DEIN HIGHSCORE: ' + highscore);
         $('#resetGame').css('visibility', 'visible');
     });
-    socket.on('lost',highscore=>{
+    socket.on('lost',highscore => {
         document.getElementById('myBody').style.backgroundColor = 'red';
         $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
-    socket.on('myDestroyedShips', (x,y)=>{
-        document.getElementById('myField' + x + y).style.backgroundColor = '#008eb7';
+    socket.on('myDestroyedShips', (x,y) => {
+        markOpponentDestroy(x,y);
     });
-    socket.on('opponentDestroyedShips', (x,y)=>{
-        document.getElementById('enemField' + x + y).style.backgroundColor = '#008eb7';
+    socket.on('opponentDestroyedShips', (x,y) => {
+        markMyDestroy(x,y);
     });
-    socket.on('refreshName', name=>{
+    socket.on('refreshName', name => {
         $("#opponentLabel").html(name);
     });
 
-    socket.on('resetField', ()=>{
+    socket.on('resetField', () => {
         $('#tablePlayer1').html(makeTable(1));
         $('#tablePlayer2').html(makeTable(2));
         document.getElementById('myBody').style.backgroundColor = 'white';
@@ -101,28 +99,32 @@ function initSocket() {
     });
 }
 
-function markMyHit(x,y){
+function markMyHit(x,y) {
     document.getElementById('enemField' + x + y).style.backgroundColor = '#FF5341';
 }
 
-function markMyNoHit(x,y){
+function markMyNoHit(x,y) {
     document.getElementById('enemField' + x + y).style.backgroundColor = '#0ab2bd';
 }
 
-function markMyDestroy(x,y){
+function markMyDestroy(x,y) {
     document.getElementById('enemField' + x + y).style.backgroundColor = '#008eb7';
 }
 
-function markOpponentHit(x,y){
+function markOpponentHit(x,y) {
     document.getElementById('myField' + x + y).style.backgroundColor = '#034044';
 }
 
-function markOpponentNoHit(x,y){
+function markOpponentNoHit(x,y) {
     document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
 }
 
-function markOpponentDestroy(x,y){
+function markOpponentDestroy(x,y) {
     document.getElementById('myField' + x + y).style.backgroundColor = '#008eb7';
+}
+
+function markMyShips(x,y){
+    document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
 }
 
 function fire(x, y) {
@@ -138,8 +140,7 @@ function makeTable(playerNumber) {
         for (let x = 0; x < 10; x++) {
             if (playerNumber == 1) {
                 str += '<td class="spielfeld' + playerNumber + '" id= myField' + x + y + '></td>';
-            }
-            else {
+            } else {
                 str += '<td onclick="fire(' + x + ',' + y + ')" class="spielfeld' + playerNumber + '" id= enemField' + x + y + '></td>';
             }
         }

@@ -1,6 +1,5 @@
 const shipPlacement = require(__dirname + "/ship-placement");
 const shipLogic = require(__dirname + "/ship-logic");
-//const Game = require(__dirname + "/game");
 const Highscore = require(__dirname + '/highscore');
 const Score = require(__dirname + '/score');
 const highscorePath = __dirname + '/highscore.json';
@@ -55,7 +54,7 @@ module.exports = class Player {
         return this._playerSocket;
     }
 
-    get opponentPlayer(){
+    get opponentPlayer() {
         return this._opponentPlayer;
     }
 
@@ -82,11 +81,11 @@ module.exports = class Player {
         return shipLogic.allShipsDestroyed(this._ships);
     }
 
-    showHits(){
+    showHits() {
         this.playerSocket.emit('rejoinGame', this.restoreFieldOfShots(this.opponentPlayer.ships) , this.opponentPlayer.restoreFieldOfShots(this.ships));
     }
 
-    showShips(){
+    showShips() {
         this.playerSocket.emit('myShips', this.field);
     }
 
@@ -113,7 +112,7 @@ module.exports = class Player {
         return restoredFieldOfShots;
     }
 
-    makeReadyToPlay(opponentPlayer){
+    makeReadyToPlay(opponentPlayer) {
         this._score = 0;
         //field of Shots setzen
         this.fieldOfShots = shipLogic.createField();
@@ -126,22 +125,22 @@ module.exports = class Player {
         this._onSetPlayerName();
     }
 
-    _onDisconnect(){
+    _onDisconnect() {
         this.playerSocket.on('disconnect', () => {
             console.log(this.id + ' disconnected');
         });
     }
 
-    _onSetPlayerName(){
-        this.playerSocket.on('setPlayerName', playerName=>{
+    _onSetPlayerName() {
+        this.playerSocket.on('setPlayerName', playerName => {
             this.name = playerName;
-            if(this._gameReference.isAbleToPlay()){
+            if(this._gameReference.isAbleToPlay()) {
                 this._gameReference.refreshNames();
             }
         });
     }
 
-    _onFire(){
+    _onFire() {
         this.playerSocket.on('fire', (x, y) => {
             if (this._gameReference.isAbleToShoot(this, x, y)) {
                 if (this.opponentPlayer.field[y][x]) {
@@ -157,8 +156,8 @@ module.exports = class Player {
                 }
                 this.fieldOfShots[y][x] = 1;
                 this.increaseScore();
-                if(this._gameReference.gameOver()){
-                    if(this.allShipsDestroyed()){
+                if(this._gameReference.gameOver()) {
+                    if(this.allShipsDestroyed()) {
                         this.opponentPlayer.hasWon();
                     }
                     else{
@@ -169,12 +168,12 @@ module.exports = class Player {
         });
     }
 
-    reset(){
+    reset() {
         this.makeReadyToPlay(this.opponentPlayer);
         this.showShips();
     }
 
-    hasWon(){
+    hasWon() {
         this._playerSocket.emit('won', this._score);
         this._opponentPlayer._playerSocket.emit('lost', this._score);
 
@@ -189,23 +188,23 @@ module.exports = class Player {
     }
 
     _addHit(ships, possibleHit) {
-        ships.forEach(ship=>{
+        ships.forEach(ship => {
             ship.addHitCoordinate(possibleHit);
         });
     }
 
-    _markDestroyedShips(){
-        this.ships.forEach(ship=>{
-            if(ship.isDestroyed()){
-                ship.allCoordinates.forEach(coordinate=>{
+    _markDestroyedShips() {
+        this.ships.forEach(ship => {
+            if(ship.isDestroyed()) {
+                ship.allCoordinates.forEach(coordinate => {
                     this.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
                     this.opponentPlayer.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
                 });
             }
         });
-        this.opponentPlayer.ships.forEach(ship=>{
-            if(ship.isDestroyed()){
-                ship.allCoordinates.forEach(coordinate=>{
+        this.opponentPlayer.ships.forEach(ship => {
+            if(ship.isDestroyed()) {
+                ship.allCoordinates.forEach(coordinate => {
                     this.opponentPlayer.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
                     this.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
                 });
@@ -213,20 +212,20 @@ module.exports = class Player {
         });
     }
 
-    _onRestart(){
+    _onRestart() {
         this.playerSocket.on('restart', () => {
             this._gameReference.reset();
         });
     }
 
-    initializeSocket(){
+    initializeSocket() {
         this._onDisconnect();
         this._onSetPlayerName();
         this._onFire();
         this._onRestart();
     }
 
-    isNotConnected(){
+    isNotConnected() {
         return !this.playerSocket || !this.playerSocket.connected;
     }
 }
