@@ -1,10 +1,18 @@
 let socket;
 let lastFire;
 $(document).ready(function () {
-    socket = io();
+    if(!socket) {
+        socket = io();
+        initSocket();
+    }
     $('#tablePlayer1').html(makeTable(1));
     $('#tablePlayer2').html(makeTable(2));
     sizeContent();
+
+    open_player_name_modal();
+});
+
+function initSocket() {
     socket.on('fireResult', result => {
         if (result) {
             document.getElementById('enemField' + lastFire[0] + lastFire[1]).style.backgroundColor = '#FF5341';
@@ -21,9 +29,9 @@ $(document).ready(function () {
             document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
         }
     });
-    socket.on('myShips', playerField=> {
-        for (y = 0; y < 10; y++) {
-            for (x = 0; x < 10; x++) {  
+    socket.on('myShips', playerField => {
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
                 if (playerField[y][x]) {
                     document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
                 }
@@ -59,6 +67,7 @@ $(document).ready(function () {
     socket.on('refreshName', name=>{
         $("#opponentLabel").html(name);
     });
+
     socket.on('resetField', ()=>{
         $('#tablePlayer1').html(makeTable(1));
         $('#tablePlayer2').html(makeTable(2));
@@ -66,11 +75,55 @@ $(document).ready(function () {
         $('#highscore').html('');
         //$('#resetGame').css('visibility', 'hidden');
     });
+
+    socket.on('rejoinGame', (myShots, opponentShots) => {
+        myShots.forEach(shot => {
+            if(shot["typeOfHit"] === "noHit") {
+                markMyNoHit(shot["xCoordinate"], shot["yCoordinate"]);
+            } else if(shot["typeOfHit"] === "hit") {
+                markMyHit(shot["xCoordinate"], shot["yCoordinate"]);
+            } else if(shot["typeOfHit"] === "destroyed"){
+                markMyDestroy(shot["xCoordinate"], shot["yCoordinate"]);
+            }
+        });
+        opponentShots.forEach(shot => {
+            if(shot["typeOfHit"] === "noHit") {
+                markOpponentNoHit(shot["xCoordinate"], shot["yCoordinate"]);
+            } else if(shot["typeOfHit"] === "hit") {
+                markOpponentHit(shot["xCoordinate"], shot["yCoordinate"]);
+            } else if(shot["typeOfHit"] === "destroyed"){
+                markOpponentDestroy(shot["xCoordinate"], shot["yCoordinate"]);
+            }
+        });
+    });
     socket.on('onLobbyFull', () => {
         window.location.href = "http://" + window.location.host + "/full-lobby.html";
     });
-    open_player_name_modal();
-});
+}
+
+function markMyHit(x,y){
+    document.getElementById('enemField' + x + y).style.backgroundColor = '#FF5341';
+}
+
+function markMyNoHit(x,y){
+    document.getElementById('enemField' + x + y).style.backgroundColor = '#0ab2bd';
+}
+
+function markMyDestroy(x,y){
+    document.getElementById('enemField' + x + y).style.backgroundColor = '#008eb7';
+}
+
+function markOpponentHit(x,y){
+    document.getElementById('myField' + x + y).style.backgroundColor = '#034044';
+}
+
+function markOpponentNoHit(x,y){
+    document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
+}
+
+function markOpponentDestroy(x,y){
+    document.getElementById('myField' + x + y).style.backgroundColor = '#008eb7';
+}
 
 function fire(x, y) {
     lastFire = [x, y];

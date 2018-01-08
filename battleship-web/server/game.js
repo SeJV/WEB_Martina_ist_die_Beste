@@ -8,6 +8,7 @@ module.exports = class Game{
     constructor(){
         this.player1Socket;
         this.player2Socket;
+        this._isRunning = false;
 
         this.player1 = new Player('player 1');
         this.player2 = new Player('player 2');
@@ -17,31 +18,51 @@ module.exports = class Game{
 
     joinLobby(socket){
         console.log('a user connected');
-        if (!this.player1Socket) {
+        if (!this.player1Socket || !this.player1Socket.connected) {
+            console.log('Player1 connected');
             this.player1Socket = socket;
-            this.player1Socket.on('disconnect', function () {
+
+            if(this._isRunning){
+                socket.emit('myShips', this.player1.field);
+                socket.emit('rejoinGame', this.player1.restoreFieldOfShots(this.player2.ships), this.player2.restoreFieldOfShots(this.player1.ships));
+                this._makeRestartPossible();
+                this._makeFirePossible(this.player1);
+                this._makeFirePossible(this.player2);
+                this._emitTurn();
+            }
+
+            this.player1Socket.on('disconnect', () => {
                 console.log('Player1 disconnected');
-                this.player1Socket = undefined;
             });
-            this.player1Socket.on('setPlayerName', playerName=>{
+
+            this.player1Socket.on('setPlayerName', playerName => {
                 this.player1.name = playerName;
                 if(this._isAbleToPlay()){
                     this._refreshNames();
                 }
             });
-
             return true;
-        } else if (!this.player2Socket) {
+        } else if (!this.player2Socket || !this.player2Socket.connected) {
+            console.log('Player2 connected');
             this.player2Socket = socket;
 
-            this._makeRestartPossible();
-            this._makeGamePlayable();
-            this._makeFirePossible(this.player1);
-            this._makeFirePossible(this.player2);
+            if(!this._isRunning) {
+                this._isRunning = true;
+                this._makeRestartPossible();
+                this._makeGamePlayable();
+                this._makeFirePossible(this.player1);
+                this._makeFirePossible(this.player2);
+            } else {
+                socket.emit('myShips', this.player2.field);
+                socket.emit('rejoinGame', this.player2.restoreFieldOfShots(this.player1.ships), this.player1.restoreFieldOfShots(this.player2.ships));
+                this._makeRestartPossible();
+                this._makeFirePossible(this.player1);
+                this._makeFirePossible(this.player2);
+                this._emitTurn();
+            }
 
-            this.player2Socket.on('disconnect', ()=>{
+            this.player2Socket.on('disconnect', () => {
                 console.log('Player2 disconnected');
-                this.player2Socket = undefined;
             });
             this.player2Socket.on('setPlayerName', playerName=>{
                 this.player2.name = playerName;
@@ -49,7 +70,6 @@ module.exports = class Game{
                     this._refreshNames();
                 }
             });
-
             return true;
         } else {
             return false;
@@ -134,7 +154,6 @@ module.exports = class Game{
         this.player2Socket.emit('resetField');
         this.player1.reset();
         this.player2.reset();
-        this._makeGamePlayable();
     }
 
     _randomPlayer(){
@@ -146,8 +165,9 @@ module.exports = class Game{
         }
     }
 
-    _gameOver(){
+    _gameOver() {
         if(!this.player1.ships || !this.player2.ships){
+            this._isRunning = false;
             return true;
         }
         return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
