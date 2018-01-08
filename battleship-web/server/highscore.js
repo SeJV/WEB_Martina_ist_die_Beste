@@ -29,6 +29,10 @@ module.exports = class Highscore {
             }
         }
         this._sort();
+
+        if(this._entries.length > 5) {
+            this._entries = this._entries.slice(0, 5);
+        }
     }
 
     readHighscore(path) {
@@ -38,13 +42,14 @@ module.exports = class Highscore {
             entries.forEach(entry => {
                 if(entry['_name'] && entry['_score']){
                     this.addScore(new score(entry['_name'], entry['_score']));
-                }    
+                }
             });
 
             this._sort();
 
             return true;
         } catch(err) {
+            console.log(err);
             return false;
         }
     }
@@ -61,7 +66,7 @@ module.exports = class Highscore {
 
     _sort() {
         this._entries = this._entries.sort( (lEntry, rEntry) => {
-            return rEntry.score - lEntry.score;
+            return lEntry.score - rEntry.score;
         });
     }
 };

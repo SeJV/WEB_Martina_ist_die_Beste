@@ -13,9 +13,6 @@ module.exports = class Game{
         this.player1 = new Player('player 1');
         this.player2 = new Player('player 2');
 
-        this._isPlayer1SocketAvailible = false;
-        this._isPlayer2SocketAvailible = false;
-
         this.turn = this.player1.id;
     }
 
@@ -24,12 +21,13 @@ module.exports = class Game{
         if (!this.player1Socket || !this.player1Socket.connected) {
             console.log('Player1 connected');
             this.player1Socket = socket;
-            this._isPlayer1SocketAvailible = true;
 
             if(this._isRunning){
                 socket.emit('myShips', this.player1.field);
                 socket.emit('rejoinGame', this.player1.restoreFieldOfShots(this.player2.ships), this.player2.restoreFieldOfShots(this.player1.ships));
+                this._makeRestartPossible();
                 this._makeFirePossible(this.player1);
+                this._makeFirePossible(this.player2);
                 this._emitTurn();
             }
 
@@ -43,12 +41,10 @@ module.exports = class Game{
                     this._refreshNames();
                 }
             });
-
             return true;
         } else if (!this.player2Socket || !this.player2Socket.connected) {
             console.log('Player2 connected');
             this.player2Socket = socket;
-            this._isPlayer2SocketAvailible = true;
 
             if(!this._isRunning) {
                 this._isRunning = true;
@@ -59,6 +55,8 @@ module.exports = class Game{
             } else {
                 socket.emit('myShips', this.player2.field);
                 socket.emit('rejoinGame', this.player2.restoreFieldOfShots(this.player1.ships), this.player1.restoreFieldOfShots(this.player2.ships));
+                this._makeRestartPossible();
+                this._makeFirePossible(this.player1);
                 this._makeFirePossible(this.player2);
                 this._emitTurn();
             }
@@ -72,7 +70,6 @@ module.exports = class Game{
                     this._refreshNames();
                 }
             });
-
             return true;
         } else {
             return false;
@@ -157,7 +154,6 @@ module.exports = class Game{
         this.player2Socket.emit('resetField');
         this.player1.reset();
         this.player2.reset();
-        this._makeGamePlayable();
     }
 
     _randomPlayer(){
@@ -169,7 +165,7 @@ module.exports = class Game{
         }
     }
 
-    _gameOver(){
+    _gameOver() {
         if(!this.player1.ships || !this.player2.ships){
             this._isRunning = false;
             return true;

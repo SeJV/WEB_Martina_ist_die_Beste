@@ -29,7 +29,7 @@ function initSocket() {
             document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
         }
     });
-    socket.on('myShips', playerField=> {
+    socket.on('myShips', playerField => {
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 10; x++) {
                 if (playerField[y][x]) {
