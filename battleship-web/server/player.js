@@ -83,7 +83,7 @@ module.exports = class Player {
     }
 
     showHits(){
-        this._playerSocket.emit('rejoinGame', this.opponentPlayer.restoreFieldOfShots(this.ships), this.restoreFieldOfShots(this.opponentPlayer.ships));
+        this.playerSocket.emit('rejoinGame', this.restoreFieldOfShots(this.opponentPlayer.ships) , this.opponentPlayer.restoreFieldOfShots(this.ships));
     }
 
     showShips(){
@@ -124,12 +124,6 @@ module.exports = class Player {
         this.opponentPlayer = opponentPlayer;
         //allow Name
         this._onSetPlayerName();
-    }
-
-    _makeRestartPossible() {
-        this.playerSocket.on('restart', ()=>{
-            this._gameReference.reset();
-        });
     }
 
     _onDisconnect(){
@@ -175,6 +169,11 @@ module.exports = class Player {
         });
     }
 
+    reset(){
+        this.makeReadyToPlay(this.opponentPlayer);
+        this.showShips();
+    }
+
     hasWon(){
         this._playerSocket.emit('won', this._score);
         this._opponentPlayer._playerSocket.emit('lost', this._score);
@@ -214,10 +213,17 @@ module.exports = class Player {
         });
     }
 
+    _onRestart(){
+        this.playerSocket.on('restart', () => {
+            this._gameReference.reset();
+        });
+    }
+
     initializeSocket(){
         this._onDisconnect();
         this._onSetPlayerName();
         this._onFire();
+        this._onRestart();
     }
 
     isNotConnected(){

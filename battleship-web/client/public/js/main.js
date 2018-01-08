@@ -73,7 +73,7 @@ function initSocket() {
         $('#tablePlayer2').html(makeTable(2));
         document.getElementById('myBody').style.backgroundColor = 'white';
         $('#highscore').html('');
-        //$('#resetGame').css('visibility', 'hidden');
+        $('#resetGame').css('visibility', 'hidden');
     });
 
     socket.on('rejoinGame', (myShots, opponentShots) => {
@@ -193,22 +193,4 @@ function sizeContent() {
     document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
     $("#changePlayername").css("margin-left", marginLeft);
     $(".namesOfPlayer").css("margin-left", marginLeft);
-}
-
-//Drag and Drop:
-
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    //data: id of DropItem
-    var data = ev.dataTransfer.getData("text");
-    //ev.target: ziel des Drops
-    $("#" + ev.target.id).css('background-color', 'blue');
 }
