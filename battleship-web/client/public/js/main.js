@@ -23,7 +23,7 @@ $(document).ready(function () {
     });
     socket.on('myShips', playerField=> {
         for (y = 0; y < 10; y++) {
-            for (x = 0; x < 10; x++) {
+            for (x = 0; x < 10; x++) {  
                 if (playerField[y][x]) {
                     document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
                 }
@@ -76,11 +76,12 @@ function fire(x, y) {
 
 function makeTable(playerNumber) {
     let str = '';
+    str += '<tbody>';
     for (let y = 0; y < 10; y++) {
         str += '<tr>';
         for (let x = 0; x < 10; x++) {
             if (playerNumber == 1) {
-                str += '<td ondrop="drop(event)" ondragover="allowDrop(event)" class="spielfeld' + playerNumber + '" id= myField' + x + y + '></td>';
+                str += '<td class="spielfeld' + playerNumber + '" id= myField' + x + y + '></td>';
             }
             else {
                 str += '<td onclick="fire(' + x + ',' + y + ')" class="spielfeld' + playerNumber + '" id= enemField' + x + y + '></td>';
@@ -88,6 +89,7 @@ function makeTable(playerNumber) {
         }
         str += '</tr>';
     }
+    str += '</tbody>';
     return str;
 }
 
