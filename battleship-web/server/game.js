@@ -1,4 +1,3 @@
-const Coordinate = require(__dirname + '/coordinate');
 const Highscore = require(__dirname + '/highscore');
 const Score = require(__dirname + '/score');
 const highscorePath = __dirname + '/highscore.json';
@@ -6,45 +5,153 @@ const Player = require(__dirname + '/player');
 
 module.exports = class Game{
     constructor(){
-        this.player1Socket;
-        this.player2Socket;
         this._isRunning = false;
 
-        this.player1 = new Player('player 1');
-        this.player2 = new Player('player 2');
+        this.player1 = new Player('Player1', this);
+        this.player2 = new Player('Player2', this);
 
         this.turn = this.player1.id;
     }
 
-    joinLobby(socket){
+    joinLobby(socket) {
         console.log('a user connected');
-        if (!this.player1Socket || !this.player1Socket.connected) {
-            console.log('Player1 connected');
-            this.player1Socket = socket;
+        //If Player1 isn't initialized
+        if (this.player1.isNotConnected()) {
+            this.player1.playerSocket = socket;
 
+            //Game already started before and other player is connected
+            if(this._isRunning && !this.player2.isNotConnected()) {
+                //new player1 socket 'on' function restart
+                this.player1.initializeSocket();
+
+                //load old game to player1 client
+                this.player1.showShips();
+                this.player1.showHits();
+                this.emitTurn();
+            }
+            //make ready for new Game
+            else {
+                this.player1.makeReadyToPlay(this.player2);
+            }
+            return true;
+        } else if(this.player2.isNotConnected()) {
+            this.player2.playerSocket = socket;
+
+            //Game already started before and other player is connected
+            if(this._isRunning && !this.player1.isNotConnected()) {
+                //player2 socket 'on' functions restart
+                this.player2.initializeSocket();
+
+                //load old game to player2 client
+                this.player2.showShips();
+                this.player2.showHits();
+                this.emitTurn();
+            }
+            //make ready for new Game
+            else {
+                this.player2.makeReadyToPlay(this.player1);
+
+                this.player1.initializeSocket();
+                this.player2.initializeSocket();
+                this.player1.showShips();
+                this.player2.showShips();
+                this.emitTurn();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    isAbleToPlay() {
+        return this.player1.playerSocket
+            && this.player2.playerSocket
+            && !this.gameOver()
+            && this.player1.name
+            && this.player2.name;
+    }
+
+    refreshNames() {
+        this.player1.playerSocket.emit('refreshName' , this.player2.name);
+        this.player2.playerSocket.emit('refreshName' , this.player1.name);
+    }
+
+    isAbleToShoot(player, x, y){
+        return player.id === this.turn && this.isAbleToPlay() && !player.fieldOfShots[y][x];
+    }
+
+    nextTurn() {
+        if(this.turn === this.player1.id){
+            this.turn = this.player2.id;
+        }
+        else{
+            this.turn = this.player1.id;
+        }
+        console.log("TURN: " + this.turn);
+    }
+
+    emitTurn() {
+        if (this.turn === this.player1.id) {
+            this.player1.playerSocket.emit('playerTurn', true);
+            this.player2.playerSocket.emit('playerTurn', false);
+        } else {
+            this.player1.playerSocket.emit('playerTurn', false);
+            this.player2.playerSocket.emit('playerTurn', true);
+        }
+    }
+
+    reset() {
+        this.player1.playerSocket.emit('resetField');
+        this.player2.playerSocket.emit('resetField');
+        this.player1.reset();
+        this.player2.reset();
+    }
+
+    randomPlayerID() {
+        //int between 1 and 2
+        if(((Math.random()*2 +1) | 0) === 1){
+            return this.player1.id;
+        } else {
+            return this.player2.id;
+        }
+    }
+
+    gameOver() {
+        if(!this.player1.ships || !this.player2.ships){
+            this._isRunning = false;
+            return true;
+        }
+        return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
+    }
+}
+
+
+
+
+/**
             if(this._isRunning){
                 socket.emit('myShips', this.player1.field);
                 socket.emit('rejoinGame', this.player1.restoreFieldOfShots(this.player2.ships), this.player2.restoreFieldOfShots(this.player1.ships));
                 this._makeRestartPossible();
                 this._makeFirePossible(this.player1);
                 this._makeFirePossible(this.player2);
-                this._emitTurn();
+                this.emitTurn();
             }
 
-            this.player1Socket.on('disconnect', () => {
+            this.player1.playerSocket.on('disconnect', () => {
                 console.log('Player1 disconnected');
             });
 
-            this.player1Socket.on('setPlayerName', playerName => {
+            this.player1.playerSocket.on('setPlayerName', playerName => {
                 this.player1.name = playerName;
                 if(this._isAbleToPlay()){
                     this._refreshNames();
                 }
             });
             return true;
-        } else if (!this.player2Socket || !this.player2Socket.connected) {
+        } else if (!this.player2.playerSocket || !this.player2.playerSocket.connected) {
             console.log('Player2 connected');
-            this.player2Socket = socket;
+            this.player2.playerSocket = socket;
 
             if(!this._isRunning) {
                 this._isRunning = true;
@@ -58,13 +165,13 @@ module.exports = class Game{
                 this._makeRestartPossible();
                 this._makeFirePossible(this.player1);
                 this._makeFirePossible(this.player2);
-                this._emitTurn();
+                this.emitTurn();
             }
 
-            this.player2Socket.on('disconnect', () => {
+            this.player2.playerSocket.on('disconnect', () => {
                 console.log('Player2 disconnected');
             });
-            this.player2Socket.on('setPlayerName', playerName=>{
+            this.player2.playerSocket.on('setPlayerName', playerName=>{
                 this.player2.name = playerName;
                 if(this._isAbleToPlay()){
                     this._refreshNames();
@@ -76,21 +183,46 @@ module.exports = class Game{
         }
     }
 
-    _emitTurn() {
-        if (this.turn == this.player1.id) {
-            this.player1Socket.emit('playerTurn', true);
-            this.player2Socket.emit('playerTurn', false);
+    isAbleToPlay(player, x, y){
+        return player.id === this.turn && this._isAbleToPlay() && !player.fieldOfShots[y][x];
+    }
+
+    gameOver() {
+        if(!this.player1.ships || !this.player2.ships){
+            this._isRunning = false;
+            return true;
+        }
+        return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
+    }
+
+    getTurn(){
+        return this.turn;
+    }
+
+    nextTurn(){
+        if(turn === this.player1.id){
+            turn = this.player2.id;
+        }
+        else{
+            turn = this.player1.id;
+        }
+    }
+
+    emitTurn() {
+        if (this.turn === this.player1.id) {
+            this.player1.playerSocket.emit('playerTurn', true);
+            this.player2.playerSocket.emit('playerTurn', false);
         } else {
-            this.player1Socket.emit('playerTurn', false);
-            this.player2Socket.emit('playerTurn', true);
+            this.player1.playerSocket.emit('playerTurn', false);
+            this.player2.playerSocket.emit('playerTurn', true);
         }
     }
 
     _makeRestartPossible() {
-        this.player2Socket.on('restart', ()=>{
+        this.player2.playerSocket.on('restart', ()=>{
             this._reset();
         });
-        this.player1Socket.on('restart', ()=>{
+        this.player1.playerSocket.on('restart', ()=>{
             this._reset();
         });
     }
@@ -103,14 +235,14 @@ module.exports = class Game{
         let opponentShips;
 
         if(currentPlayer.id === this.player1.id){
-            playerSocket = this.player1Socket;
-            opponentSocket = this.player2Socket;
+            playerSocket = this.player1.playerSocket;
+            opponentSocket = this.player2.playerSocket;
             opponentField = this.player2.field;
             opponentShips = this.player2.ships;
             nextTurn = this.player2.id;
         } else {
-            playerSocket = this.player2Socket;
-            opponentSocket = this.player1Socket;
+            playerSocket = this.player2.playerSocket;
+            opponentSocket = this.player1.playerSocket;
             opponentField = this.player1.field;
             opponentShips = this.player1.ships;
             nextTurn = this.player1.id;
@@ -143,20 +275,20 @@ module.exports = class Game{
     }
 
     _makeGamePlayable(){
-        this.player1Socket.emit('myShips', this.player1.field);
-        this.player2Socket.emit('myShips', this.player2.field);
+        this.player1.playerSocket.emit('myShips', this.player1.field);
+        this.player2.playerSocket.emit('myShips', this.player2.field);
         this.turn = this._randomPlayer();
-        this._emitTurn();
+        this.emitTurn();
     }
 
-    _reset(){
-        this.player1Socket.emit('resetField');
-        this.player2Socket.emit('resetField');
+    reset(){
+        this.player1.playerSocket.emit('resetField');
+        this.player2.playerSocket.emit('resetField');
         this.player1.reset();
         this.player2.reset();
     }
 
-    _randomPlayer(){
+    randomPlayerID(){
         //int between 1 and 2
         if(((Math.random()*2 +1) | 0) === 1){
             return this.player1.id;
@@ -165,24 +297,16 @@ module.exports = class Game{
         }
     }
 
-    _gameOver() {
-        if(!this.player1.ships || !this.player2.ships){
-            this._isRunning = false;
-            return true;
-        }
-        return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
-    }
-
     _emitWinnerAndLoser(){
         let winner;
         if(this.player1.allShipsDestroyed()){
             winner = this.player2;
-            this.player2Socket.emit('won', winner.score);
-            this.player1Socket.emit('lost', winner.score);
+            this.player2.playerSocket.emit('won', winner.score);
+            this.player1.playerSocket.emit('lost', winner.score);
         } else {
             winner = this.player1;
-            this.player2Socket.emit('lost', winner.score);
-            this.player1Socket.emit('won', winner.score);
+            this.player2.playerSocket.emit('lost', winner.score);
+            this.player1.playerSocket.emit('won', winner.score);
         }
 
         let highscore = new Highscore();
@@ -197,41 +321,18 @@ module.exports = class Game{
         }
     }
 
-    _addHit(opponentShips, possibleHit) {
-        opponentShips.forEach(ship=>{
-            ship.addHitCoordinate(possibleHit);
-        });
-    }
-
-    _markDestroyedShips(){
-        this.player1.ships.forEach(ship=>{
-            if(ship.isDestroyed()){
-                ship.allCoordinates.forEach(coordinate=>{
-                    this.player1Socket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                    this.player2Socket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                });
-            }
-        });
-        this.player2.ships.forEach(ship=>{
-            if(ship.isDestroyed()){
-                ship.allCoordinates.forEach(coordinate=>{
-                    this.player2Socket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                    this.player1Socket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                });
-            }
-        });
-    }
-
-    _isAbleToPlay(){
-        return this.player1Socket
-            && this.player2Socket
+    isAbleToPlay(){
+        return this.player1.playerSocket
+            && this.player2.playerSocket
             && !this._gameOver()
             && this.player1.name
             && this.player2.name;
     }
 
-    _refreshNames() {
-        this.player1Socket.emit('refreshName' , this.player2.name);
-        this.player2Socket.emit('refreshName' , this.player1.name);
+    refreshNames() {
+        this.player1.playerSocket.emit('refreshName' , this.player2.name);
+        this.player2.playerSocket.emit('refreshName' , this.player1.name);
     }
 }
+
+*/
