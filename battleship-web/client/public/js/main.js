@@ -42,12 +42,12 @@ $(document).ready(function () {
     });
     socket.on('won',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'green';
-        $('#highscore').html('YOUR HIGHSCORE: ' + highscore);
+        $('#highscore').html('DEIN HIGHSCORE: ' + highscore);
         $('#resetGame').css('visibility', 'visible');
     });
     socket.on('lost',highscore=>{
         document.getElementById('myBody').style.backgroundColor = 'red';
-        $('#highscore').html('OPPONENTS HIGHSCORE: '+ highscore);
+        $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
     socket.on('myDestroyedShips', (x,y)=>{
@@ -65,6 +65,9 @@ $(document).ready(function () {
         document.getElementById('myBody').style.backgroundColor = 'white';
         $('#highscore').html('');
         //$('#resetGame').css('visibility', 'hidden');
+    });
+    socket.on('onLobbyFull', () => {
+        window.location.href = "http://" + window.location.host + "/full-lobby.html";
     });
     open_player_name_modal();
 });
@@ -131,7 +134,7 @@ function sizeContent() {
     $(".wrapper").css("height", newHeight);
     let marginLeft = ($("html").width()*0.5 - $(".table-bordered").height()*0.5) + "px";
 
-    document.getElementById("tablePlayer1").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important"); 
+    document.getElementById("tablePlayer1").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
     document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
     $("#changePlayername").css("margin-left", marginLeft);
     $(".namesOfPlayer").css("margin-left", marginLeft);
