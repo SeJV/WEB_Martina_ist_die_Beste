@@ -12,58 +12,82 @@ module.exports = class Player {
         this.reset();
     }
 
-    set name(name){
+    set name(name) {
         this._name = name;
     }
 
-    set ships(ships){
+    set ships(ships) {
         this._ships = ships;
     }
 
-    set field(field){
+    set field(field) {
         this._field = field;
     }
 
-    set fieldOfShots(fieldOfShots){
+    set fieldOfShots(fieldOfShots) {
         this._fieldOfShots = fieldOfShots;
     }
 
-    addShot(x,y){
+    addShot(x,y) {
         this._fieldOfShots[y][x] = 1;
     }
 
-    increaseScore(){
+    increaseScore() {
         this._score++;
     }
 
-    get name(){
+    get name() {
         return this._name;
     }
-    get ships(){
+    get ships() {
         return this._ships;
     }
-    get field(){
+    get field() {
         return this._field;
     }
-    get fieldOfShots(){
+    get fieldOfShots() {
         return this._fieldOfShots;
     }
-    get score(){
+    get score() {
         return this._score;
     }
-    get id(){
+    get id() {
         return this._id;
     }
 
-    reset(){      
+    reset(){
         this._ships = shipPlacement.generateShipPlacement();
         this._field = shipLogic.addShips(this._ships);
         this._fieldOfShots = shipLogic.createField();
         this._score = 0;
     }
 
-    allShipsDestroyed(){
+    allShipsDestroyed() {
         return shipLogic.allShipsDestroyed(this._ships);
     }
 
+    restoreFieldOfShots(opponentShips) {
+        let restoredFieldOfShots = [];
+
+        for(let y = 0; y < this._fieldOfShots.length; ++y) {
+            for(let x = 0; x < this._fieldOfShots[y].length; ++x) {
+                if(this._fieldOfShots[y][x] === 1) {
+                    restoredFieldOfShots.push({"xCoordinate" : x, "yCoordinate" : y, "typeOfHit" : "noHit"});
+                }
+            }
+        }
+
+        opponentShips.forEach(ship => {
+            let isDestroyed = ship.isDestroyed();
+            ship.allCoordinates.forEach(coordinate => {
+                restoredFieldOfShots.forEach(shot => {
+                    if(shot["xCoordinate"] === coordinate.xCoordinate && shot["yCoordinate"] === coordinate.yCoordinate) {
+                        shot["typeOfHit"] = isDestroyed ? "destroyed" : "hit";
+                    }
+                });
+            });
+        });
+
+        return restoredFieldOfShots;
+    }
 }
