@@ -15,7 +15,7 @@ module.exports = class Game{
         this.turn = this.player1.id;
     }
 
-    startGame(socket){
+    joinLobby(socket){
         console.log('a user connected');
         if (!this.player1Socket) {
             this.player1Socket = socket;
@@ -29,6 +29,8 @@ module.exports = class Game{
                     this._refreshNames();
                 }
             });
+
+            return true;
         } else if (!this.player2Socket) {
             this.player2Socket = socket;
 
@@ -47,6 +49,10 @@ module.exports = class Game{
                     this._refreshNames();
                 }
             });
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -208,5 +214,4 @@ module.exports = class Game{
         this.player1Socket.emit('refreshName' , this.player2.name);
         this.player2Socket.emit('refreshName' , this.player1.name);
     }
-
 }
