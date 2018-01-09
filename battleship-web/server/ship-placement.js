@@ -29,13 +29,16 @@ function generateShipPlacement() {
     return ships;
 }
 
+// Try to add the ships to the field recursive
 function tryToGenerateShipPlacement(field, ships, shipTypes) {
     let shipType = shipTypes.shift();
+    // All ships placed?
     if(shipType === undefined) {
         return true;
     }
 
     let ship = tryToAddShip(field, shipType, TRY_COUNT);
+    // Ship added to the filed?
     if(ship.hasCoordinates()) {
         ships.push(ship);
         return tryToGenerateShipPlacement(field, ships, shipTypes);
@@ -44,6 +47,7 @@ function tryToGenerateShipPlacement(field, ships, shipTypes) {
     }
 }
 
+// Try to add the ship to the field on a random position mulitple times
 function tryToAddShip(field, size, tryCount) {
     let ship;
 
@@ -63,15 +67,18 @@ function tryToAddShip(field, size, tryCount) {
     return ship;
 }
 
+// Add the ship vertical to the field if possible
 function addShipVertical(field, startPosX, startPosY, size) {
     let ship = new Ship();
 
+    // Check if we can place the ship to the position
     for(let i = 0; i < size; ++i) {
         if(!isValiedPosition(field, startPosX, startPosY+i)) {
             return ship;
         }
     }
 
+    // Add the ship to the field
     for(let i = 0; i < size; ++i) {
         field[startPosY+i][startPosX] = 1;
         ship.addCoordinate(new Coordinate(startPosX, startPosY+i));
@@ -80,15 +87,18 @@ function addShipVertical(field, startPosX, startPosY, size) {
     return ship;
 }
 
+// Add the ship horizontal to the field if possible
 function addShipHorizontal(field, startPosX, startPosY, size) {
     let ship = new Ship();
 
+    // Check if we can place the ship to the position
     for(let i = 0; i < size; ++i) {
         if(!isValiedPosition(field, startPosX+i, startPosY)) {
             return ship;
         }
     }
 
+    // Add the ship to the field
     for(let i = 0; i < size; ++i) {
         field[startPosY][startPosX + i] = 1;
         ship.addCoordinate(new Coordinate(startPosX + i, startPosY));
@@ -97,6 +107,7 @@ function addShipHorizontal(field, startPosX, startPosY, size) {
     return ship;
 }
 
+// Check if the postion is available
 function isValiedPosition(field, startPosX, startPosY) {
     if(typeof field[startPosY] === 'undefined' ||
      typeof field[startPosY][startPosX] === 'undefined' ||
@@ -110,6 +121,7 @@ function isValiedPosition(field, startPosX, startPosY) {
     return true;
 }
 
+// Check if the enviroment of the field is not occupied
 function checkNearbyFields(field, posX, posY) {
     return checkNearbyField(field, posX, posY - 1) &&
          checkNearbyField(field, posX, posY + 1) &&
@@ -121,6 +133,7 @@ function checkNearbyFields(field, posX, posY) {
          checkNearbyField(field, posX - 1, posY + 1);
 }
 
+// Check if the field is already used
 function checkNearbyField(field, posX, posY) {
     if(typeof field[posY] === 'undefined' || typeof field[posY][posX] === 'undefined') {
         return true;
