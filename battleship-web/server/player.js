@@ -114,14 +114,10 @@ module.exports = class Player {
 
     makeReadyToPlay(opponentPlayer) {
         this._score = 0;
-        //field of Shots setzen
         this.fieldOfShots = shipLogic.createField();
-        //ships und field setzen
         this.ships = shipPlacement.generateShipPlacement();
         this.field = shipLogic.addShips(this.ships);
-        //opponent Player setzen
         this.opponentPlayer = opponentPlayer;
-        //allow Name
         this._onSetPlayerName();
     }
 
