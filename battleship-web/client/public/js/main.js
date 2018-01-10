@@ -188,7 +188,7 @@ function set_player_name() {
 }
 
 function sizeContent() {
-    let newHeight = $("html").height()*0.4 + "px";
+    let newHeight = $("html").height()*0.35 + "px";
 
     document.getElementById("tablePlayer1").setAttribute("style","width: " + newHeight + "!important");
     document.getElementById("tablePlayer2").setAttribute("style","width: " + newHeight + "!important");
