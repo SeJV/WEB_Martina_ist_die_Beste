@@ -1,6 +1,8 @@
-const shipLogic = require('./ship-logic');
-const Ship = require(__dirname + '/ship');
-const Coordinate = require(__dirname + '/coordinate');
+const path = require('path');
+
+const shipLogic = require(path.join(__dirname, 'ship-logic'));
+const Ship = require(path.join(__dirname, 'ship'));
+const Coordinate = require(path.join(__dirname, 'coordinate'));
 
 const SHIP_CARRIER_SIZE = 5;
 const SHIP_BATTLESHIP_SIZE = 4;

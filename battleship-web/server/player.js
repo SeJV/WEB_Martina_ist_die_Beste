@@ -1,9 +1,11 @@
-const shipPlacement = require(__dirname + "/ship-placement");
-const shipLogic = require(__dirname + "/ship-logic");
-const Highscore = require(__dirname + '/highscore');
-const Score = require(__dirname + '/score');
-const highscorePath = __dirname + '/highscore.json';
-const Coordinate = require(__dirname + '/coordinate');
+const path = require('path');
+
+const shipPlacement = require(path.join(__dirname, 'ship-placement'));
+const shipLogic = require(path.join(__dirname, 'ship-logic'));
+const Highscore = require(path.join(__dirname, 'highscore'));
+const Score = require(path.join(__dirname, 'score'));
+const highscorePath = path.join(__dirname, 'highscore.json');
+const Coordinate = require(path.join(__dirname, 'coordinate'));
 
 module.exports = class Player {
     constructor(id, gameReference) {
