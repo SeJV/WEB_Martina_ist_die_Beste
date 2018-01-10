@@ -1,6 +1,3 @@
-const Highscore = require(__dirname + '/highscore');
-const Score = require(__dirname + '/score');
-const highscorePath = __dirname + '/highscore.json';
 const Player = require(__dirname + '/player');
 
 module.exports = class Game {
@@ -113,4 +110,4 @@ module.exports = class Game {
         }
         return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
     }
-}
+};

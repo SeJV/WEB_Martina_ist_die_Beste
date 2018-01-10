@@ -1,5 +1,5 @@
-const shipPlacement = require(__dirname + "/ship-placement");
-const shipLogic = require(__dirname + "/ship-logic");
+const shipPlacement = require(__dirname + '/ship-placement');
+const shipLogic = require(__dirname + '/ship-logic');
 const Highscore = require(__dirname + '/highscore');
 const Score = require(__dirname + '/score');
 const highscorePath = __dirname + '/highscore.json';
@@ -94,7 +94,7 @@ module.exports = class Player {
         for(let y = 0; y < this._fieldOfShots.length; ++y) {
             for(let x = 0; x < this._fieldOfShots[y].length; ++x) {
                 if(this._fieldOfShots[y][x] === 1) {
-                    restoredFieldOfShots.push({"xCoordinate" : x, "yCoordinate" : y, "typeOfHit" : "noHit"});
+                    restoredFieldOfShots.push({'xCoordinate' : x, 'yCoordinate' : y, 'typeOfHit' : 'noHit'});
                 }
             }
         }
@@ -103,8 +103,8 @@ module.exports = class Player {
             let isDestroyed = ship.isDestroyed();
             ship.allCoordinates.forEach(coordinate => {
                 restoredFieldOfShots.forEach(shot => {
-                    if(shot["xCoordinate"] === coordinate.xCoordinate && shot["yCoordinate"] === coordinate.yCoordinate) {
-                        shot["typeOfHit"] = isDestroyed ? "destroyed" : "hit";
+                    if(shot['xCoordinate'] === coordinate.xCoordinate && shot['yCoordinate'] === coordinate.yCoordinate) {
+                        shot['typeOfHit'] = isDestroyed ? 'destroyed' : 'hit';
                     }
                 });
             });
@@ -179,11 +179,11 @@ module.exports = class Player {
 
         let highscore = new Highscore();
         if(!highscore.readHighscore(highscorePath)) {
-            console.log("Error reading from " + highscorePath);
+            console.log('Error reading from ' + highscorePath);
         }
         highscore.addScore(new Score(this.name, this._score));
         if(!highscore.writeHighscore(highscorePath)) {
-            console.log("Error writing in " + highscorePath);
+            console.log('Error writing in ' + highscorePath);
         }
     }
 
@@ -228,4 +228,4 @@ module.exports = class Player {
     isNotConnected() {
         return !this.playerSocket || !this.playerSocket.connected;
     }
-}
+};
