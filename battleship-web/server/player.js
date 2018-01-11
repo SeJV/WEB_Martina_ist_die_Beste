@@ -97,7 +97,7 @@ module.exports = class Player {
         for(let y = 0; y < this._fieldOfShots.length; ++y) {
             for(let x = 0; x < this._fieldOfShots[y].length; ++x) {
                 if(this._fieldOfShots[y][x] === 1) {
-                    restoredFieldOfShots.push({"xCoordinate" : x, "yCoordinate" : y, "typeOfHit" : "noHit"});
+                    restoredFieldOfShots.push({'xCoordinate' : x, 'yCoordinate' : y, 'typeOfHit' : 'noHit'});
                 }
             }
         }
@@ -106,8 +106,8 @@ module.exports = class Player {
             let isDestroyed = ship.isDestroyed();
             ship.allCoordinates.forEach(coordinate => {
                 restoredFieldOfShots.forEach(shot => {
-                    if(shot["xCoordinate"] === coordinate.xCoordinate && shot["yCoordinate"] === coordinate.yCoordinate) {
-                        shot["typeOfHit"] = isDestroyed ? "destroyed" : "hit";
+                    if(shot['xCoordinate'] === coordinate.xCoordinate && shot['yCoordinate'] === coordinate.yCoordinate) {
+                        shot['typeOfHit'] = isDestroyed ? 'destroyed' : 'hit';
                     }
                 });
             });
@@ -117,14 +117,10 @@ module.exports = class Player {
 
     makeReadyToPlay(opponentPlayer) {
         this._score = 0;
-        //field of Shots setzen
         this.fieldOfShots = shipLogic.createField();
-        //ships und field setzen
         this.ships = shipPlacement.generateShipPlacement();
         this.field = shipLogic.addShips(this.ships);
-        //opponent Player setzen
         this.opponentPlayer = opponentPlayer;
-        //allow Name
         this._onSetPlayerName();
     }
 
@@ -237,4 +233,4 @@ module.exports = class Player {
     isNotConnected() {
         return !this.playerSocket || !this.playerSocket.connected;
     }
-}
+};

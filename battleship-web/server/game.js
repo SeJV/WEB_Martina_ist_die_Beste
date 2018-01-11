@@ -111,4 +111,4 @@ module.exports = class Game {
         }
         return (this.player1.allShipsDestroyed() || this.player2.allShipsDestroyed());
     }
-}
+};

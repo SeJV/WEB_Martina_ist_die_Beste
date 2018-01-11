@@ -1,7 +1,6 @@
 let socket;
 let lastFire;
-
-$(document).ready(function () {
+$(document).ready(() => {
     if(!socket) {
         socket = io();
         initSocket();
@@ -12,6 +11,8 @@ $(document).ready(function () {
 
     open_player_name_modal();
 });
+
+$(window).resize(sizeContent);
 
 function initSocket() {
     socket.on('fireResult', isHit => {
@@ -187,12 +188,13 @@ function set_player_name() {
 }
 
 function sizeContent() {
-    let newHeight = $("html").height()*0.8 + "px";
-    $(".wrapper").css("height", newHeight);
-    let marginLeft = ($("html").width()*0.5 - $(".table-bordered").height()*0.5) + "px";
+    let newHeight = $("html").height()*0.35 + "px";
 
-    document.getElementById("tablePlayer1").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
-    document.getElementById("tablePlayer2").setAttribute("style","width: " + $(".table-bordered").height()+"px" + "!important");
+    document.getElementById("tablePlayer1").setAttribute("style","width: " + newHeight + "!important");
+    document.getElementById("tablePlayer2").setAttribute("style","width: " + newHeight + "!important");
+    
+    let tableWidth = $(".table-bordered").width();
+    let marginLeft = ($("html").width()*0.5 - tableWidth*0.5) + "px";
     $("#changePlayername").css("margin-left", marginLeft);
     $(".namesOfPlayer").css("margin-left", marginLeft);
 }
