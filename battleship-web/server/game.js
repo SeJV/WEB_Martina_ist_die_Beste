@@ -1,8 +1,4 @@
 const path = require('path');
-
-const Highscore = require(path.join(__dirname, 'highscore'));
-const Score = require(path.join(__dirname, 'score'));
-const highscorePath = path.join(__dirname, 'highscore.json');
 const Player = require(path.join(__dirname, 'player'));
 
 module.exports = class Game {
