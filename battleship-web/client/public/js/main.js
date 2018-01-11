@@ -26,7 +26,7 @@ function initSocket() {
         if (isHit) {
             markOpponentHit(x,y);
         } else {
-            markOpponentNoHit(x,y) 
+            markOpponentNoHit(x,y)
         }
     });
     socket.on('myShips', playerField => {

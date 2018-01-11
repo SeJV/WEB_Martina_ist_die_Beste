@@ -1,4 +1,6 @@
-const coordinate = require(__dirname + '/coordinate');
+const path = require('path');
+
+const coordinate = require(path.join(__dirname, 'coordinate'));
 
 module.exports = class Ship {
     constructor() {

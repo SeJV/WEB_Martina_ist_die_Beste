@@ -1,9 +1,12 @@
-const shipPlacement = require(__dirname + '/ship-placement');
-const shipLogic = require(__dirname + '/ship-logic');
-const Highscore = require(__dirname + '/highscore');
-const Score = require(__dirname + '/score');
-const highscorePath = __dirname + '/highscore.json';
-const Coordinate = require(__dirname + '/coordinate');
+const path = require('path');
+
+const shipPlacement = require(path.join(__dirname, 'ship-placement'));
+const shipLogic = require(path.join(__dirname, 'ship-logic'));
+const Highscore = require(path.join(__dirname, 'highscore'));
+const Score = require(path.join(__dirname, 'score'));
+//const highscorePath = path.join(__dirname, 'highscore.json');
+const highscorePath = 'C://highscore.json';
+const Coordinate = require(path.join(__dirname, 'coordinate'));
 
 module.exports = class Player {
     constructor(id, gameReference) {
@@ -175,11 +178,17 @@ module.exports = class Player {
 
         let highscore = new Highscore();
         if(!highscore.readHighscore(highscorePath)) {
-            console.log('Error reading from ' + highscorePath);
+            let msg = "Error reading from " + highscorePath;
+            console.log(msg);
+            this._playerSocket.emit('highscore_error', msg);
+            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
         }
         highscore.addScore(new Score(this.name, this._score));
         if(!highscore.writeHighscore(highscorePath)) {
-            console.log('Error writing in ' + highscorePath);
+            let msg = "Error writing in " + highscorePath;
+            console.log(msg);
+            this._playerSocket.emit('highscore_error', msg);
+            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
         }
     }
 

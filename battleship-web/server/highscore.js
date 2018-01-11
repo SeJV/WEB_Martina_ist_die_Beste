@@ -1,5 +1,7 @@
+const path = require('path');
 const fs = require('fs');
-const score = require(__dirname + '/score');
+
+const score = require(path.join(__dirname, 'score'));
 
 module.exports = class Highscore {
     constructor() {

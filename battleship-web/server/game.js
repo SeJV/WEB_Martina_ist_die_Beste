@@ -1,4 +1,5 @@
-const Player = require(__dirname + '/player');
+const path = require('path');
+const Player = require(path.join(__dirname, 'player'));
 
 module.exports = class Game {
     constructor() {

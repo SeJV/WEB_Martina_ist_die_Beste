@@ -1,7 +1,7 @@
 html, body{
     font-family: 'Oxygen', sans-serif;
     height: 100%;
-}    
+}
 
 .table-bordered {
     height: 40% !important;
@@ -16,6 +16,10 @@ html, body{
 #tablePlayer2 {
     margin-left: auto;
     margin-right: auto;
+}
+
+#errorAlert {
+    visibility: hidden;
 }
 
 td{
