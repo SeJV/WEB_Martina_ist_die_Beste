@@ -25,7 +25,7 @@ function initSocket() {
         if (isHit) {
             markOpponentHit(x,y);
         } else {
-            markOpponentNoHit(x,y)
+            markOpponentNoHit(x,y);
         }
     });
     socket.on('myShips', playerField => {
@@ -64,7 +64,7 @@ function initSocket() {
         markMyDestroy(x,y);
     });
     socket.on('refreshName', name => {
-        $("#opponentLabel").html(name);
+        $('#opponentLabel').html(name);
     });
 
     socket.on('resetField', () => {
@@ -77,26 +77,26 @@ function initSocket() {
 
     socket.on('rejoinGame', (myShots, opponentShots) => {
         myShots.forEach(shot => {
-            if(shot["typeOfHit"] === "noHit") {
-                markMyNoHit(shot["xCoordinate"], shot["yCoordinate"]);
-            } else if(shot["typeOfHit"] === "hit") {
-                markMyHit(shot["xCoordinate"], shot["yCoordinate"]);
-            } else if(shot["typeOfHit"] === "destroyed"){
-                markMyDestroy(shot["xCoordinate"], shot["yCoordinate"]);
+            if(shot['typeOfHit'] === 'noHit') {
+                markMyNoHit(shot['xCoordinate'], shot['yCoordinate']);
+            } else if(shot['typeOfHit'] === 'hit') {
+                markMyHit(shot['xCoordinate'], shot['yCoordinate']);
+            } else if(shot['typeOfHit'] === 'destroyed'){
+                markMyDestroy(shot['xCoordinate'], shot['yCoordinate']);
             }
         });
         opponentShots.forEach(shot => {
-            if(shot["typeOfHit"] === "noHit") {
-                markOpponentNoHit(shot["xCoordinate"], shot["yCoordinate"]);
-            } else if(shot["typeOfHit"] === "hit") {
-                markOpponentHit(shot["xCoordinate"], shot["yCoordinate"]);
-            } else if(shot["typeOfHit"] === "destroyed"){
-                markOpponentDestroy(shot["xCoordinate"], shot["yCoordinate"]);
+            if(shot['typeOfHit'] === 'noHit') {
+                markOpponentNoHit(shot['xCoordinate'], shot['yCoordinate']);
+            } else if(shot['typeOfHit'] === 'hit') {
+                markOpponentHit(shot['xCoordinate'], shot['yCoordinate']);
+            } else if(shot['typeOfHit'] === 'destroyed'){
+                markOpponentDestroy(shot['xCoordinate'], shot['yCoordinate']);
             }
         });
     });
     socket.on('onLobbyFull', () => {
-        window.location.href = "http://" + window.location.host + "/full-lobby.html";
+        window.location.href = 'http://' + window.location.host + '/full-lobby.html';
     });
 }
 
@@ -143,7 +143,7 @@ function makeTable(playerNumber, tableID) {
             tableData = document.createElement('td');
             tableData.setAttribute('class', 'battleground' + playerNumber);
             if (playerNumber === 1) {
-                tableData.setAttribute('id', "myField" + x + y);
+                tableData.setAttribute('id', 'myField' + x + y);
             } else {
                 tableData.setAttribute('id', 'enemField' + x + y);
                 tableData.setAttribute('onclick', 'fire(' + x + ',' + y + ')');
@@ -191,13 +191,13 @@ function setPlayerName() {
 }
 
 function sizeContent() {
-    let newHeight = $("html").height()*0.35 + "px";
+    let newHeight = $('html').height()*0.35 + 'px';
 
-    document.getElementById("tablePlayer1").setAttribute("style","width: " + newHeight + "!important");
-    document.getElementById("tablePlayer2").setAttribute("style","width: " + newHeight + "!important");
+    document.getElementById('tablePlayer1').setAttribute('style','width: ' + newHeight + '!important');
+    document.getElementById('tablePlayer2').setAttribute('style','width: ' + newHeight + '!important');
     
-    let tableWidth = $(".table-bordered").width();
-    let marginLeft = ($("html").width()*0.5 - tableWidth*0.5) + "px";
-    $("#changePlayername").css("margin-left", marginLeft);
-    $(".namesOfPlayer").css("margin-left", marginLeft);
+    let tableWidth = $('.table-bordered').width();
+    let marginLeft = ($('html').width()*0.5 - tableWidth*0.5) + 'px';
+    $('#changePlayername').css('margin-left', marginLeft);
+    $('.namesOfPlayer').css('margin-left', marginLeft);
 }

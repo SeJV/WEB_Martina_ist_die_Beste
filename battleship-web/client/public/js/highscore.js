@@ -11,10 +11,10 @@ function getJSON(url, callback) {
         }
     };
     xhr.send();
-};
+}
 
 $(document).ready( () => {
-    const host = "http://" + window.location.host;
+    const host = 'http://' + window.location.host;
     getJSON(host + '/api/v1/highscore', (error, data) => {
         if(error) {
             alert(error);
