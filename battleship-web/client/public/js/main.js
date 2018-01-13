@@ -8,7 +8,7 @@ $(document).ready(() => {
     makeTable(1, 'tablePlayer1');
     makeTable(2, 'tablePlayer2');
     sizeContent();
-    open_player_name_modal();
+    openPlayerNameModal();
 });
 
 $(window).resize(sizeContent);
@@ -161,7 +161,7 @@ $('#playerName').modal({
     backdrop: 'static'
 });
 
-function open_player_name_modal() {
+function openPlayerNameModal() {
     $('#playerName').modal({
         show: true,
         keyboard: false,
@@ -169,11 +169,11 @@ function open_player_name_modal() {
     });
 }
 
-function reset_the_game(){
+function resetTheGame(){
     socket.emit('restart');
 }
 
-function set_player_name() {
+function setPlayerName() {
     let myLabel = document.getElementById('myLabelInput');
     // We have to reset the form errors with custom validity
     myLabel.setCustomValidity('');

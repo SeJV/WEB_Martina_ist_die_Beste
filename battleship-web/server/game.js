@@ -28,7 +28,7 @@ module.exports = class Game {
 
             //make ready for new Game
             else {
-                this.reset_player_names();
+                this.resetPlayerNames();
                 this._isRunning = false;
                 this.player1.makeReadyToPlay(this.player2);
             }
@@ -46,7 +46,7 @@ module.exports = class Game {
             }
             //make ready for new Game
             else {
-                this.reset_player_names();
+                this.resetPlayerNames();
                 this._isRunning = true;
 
                 this.player2.makeReadyToPlay(this.player1);
@@ -80,7 +80,7 @@ module.exports = class Game {
         }
     }
 
-    reset_player_names(){
+    resetPlayerNames(){
         if(this.player1 && this.player1.name){
             this.player1.name = null;
         }
