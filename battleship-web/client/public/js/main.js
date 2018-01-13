@@ -5,10 +5,9 @@ $(document).ready(() => {
         socket = io();
         initSocket();
     }
-    $('#tablePlayer1').html(makeTable(1));
-    $('#tablePlayer2').html(makeTable(2));
+    makeTable(1, 'tablePlayer1');
+    makeTable(2, 'tablePlayer2');
     sizeContent();
-
     open_player_name_modal();
 });
 
@@ -54,7 +53,7 @@ function initSocket() {
         $('#resetGame').css('visibility', 'visible');
     });
     socket.on('lost',highscore => {
-        document.getElementById('myBody').style.backgroundColor = 'red';
+        document.getElementById('myBody').style.backgroundColor = '#BF5FFF';
         $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
@@ -134,23 +133,27 @@ function fire(x, y) {
     socket.emit('fire', x, y);
 }
 
-function makeTable(playerNumber) {
-    let str = '';
-    str += '<tbody>';
-    for (let y = 0; y < 10; y++) {
-        str += '<tr>';
-        for (let x = 0; x < 10; x++) {
-            if (playerNumber == 1) {
-                str += '<td class="spielfeld' + playerNumber + '" id= myField' + x + y + '></td>';
+function makeTable(playerNumber, tableID) {
+    let table = document.getElementById(tableID);
+    let tableBody = document.createElement('tbody');
+    table.appendChild(tableBody);
+    for (let y = 0; y < 10; ++y) {
+        tableRow = document.createElement('tr');
+        for (let x = 0; x < 10; ++x) {
+            tableData = document.createElement('td');
+            tableData.setAttribute('class', 'battleground' + playerNumber);
+            if (playerNumber === 1) {
+                tableData.setAttribute('id', "myField" + x + y);
             } else {
-                str += '<td onclick="fire(' + x + ',' + y + ')" class="spielfeld' + playerNumber + '" id= enemField' + x + y + '></td>';
+                tableData.setAttribute('id', 'enemField' + x + y);
+                tableData.setAttribute('onclick', 'fire(' + x + ',' + y + ')');
             }
+            tableRow.appendChild(tableData);
         }
-        str += '</tr>';
+        tableBody.appendChild(tableRow);
     }
-    str += '</tbody>';
-    return str;
 }
+
 
 $('#playerName').modal({
     show: true,

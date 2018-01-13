@@ -1,6 +1,6 @@
 const path = require('path');
 
-const shipLogic = require(path.join(__dirname, 'ship-logic'));
+const shipLogic = require(path.join(__dirname, 'ship_logic'));
 const Ship = require(path.join(__dirname, 'ship'));
 const Coordinate = require(path.join(__dirname, 'coordinate'));
 

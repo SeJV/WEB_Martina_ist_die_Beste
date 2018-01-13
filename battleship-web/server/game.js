@@ -25,8 +25,10 @@ module.exports = class Game {
                 this.player1.showHits();
                 this.emitTurn();
             }
+
             //make ready for new Game
             else {
+                this.reset_player_names();
                 this._isRunning = false;
                 this.player1.makeReadyToPlay(this.player2);
             }
@@ -44,6 +46,7 @@ module.exports = class Game {
             }
             //make ready for new Game
             else {
+                this.reset_player_names();
                 this._isRunning = true;
 
                 this.player2.makeReadyToPlay(this.player1);
@@ -69,8 +72,21 @@ module.exports = class Game {
     }
 
     refreshNames() {
-        this.player1.playerSocket.emit('refreshName' , this.player2.name);
-        this.player2.playerSocket.emit('refreshName' , this.player1.name);
+        if(this.player2.name){
+            this.player1.playerSocket.emit('refreshName' , this.player2.name);
+        }
+        if(this.player1.name){
+            this.player2.playerSocket.emit('refreshName' , this.player1.name);
+        }
+    }
+
+    reset_player_names(){
+        if(this.player1 && this.player1.name){
+            this.player1.name = null;
+        }
+        if(this.player2 && this.player2.name){
+            this.player2.name = null;
+        }
     }
 
     isAbleToShoot(player, x, y) {

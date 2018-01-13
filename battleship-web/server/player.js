@@ -1,7 +1,7 @@
 const path = require('path');
 
-const shipPlacement = require(path.join(__dirname, 'ship-placement'));
-const shipLogic = require(path.join(__dirname, 'ship-logic'));
+const shipPlacement = require(path.join(__dirname, 'ship_placement'));
+const shipLogic = require(path.join(__dirname, 'ship_logic'));
 const Highscore = require(path.join(__dirname, 'highscore'));
 const Score = require(path.join(__dirname, 'score'));
 //const highscorePath = path.join(__dirname, 'highscore.json');
@@ -86,6 +86,11 @@ module.exports = class Player {
 
     showHits() {
         this.playerSocket.emit('rejoinGame', this.restoreFieldOfShots(this.opponentPlayer.ships) , this.opponentPlayer.restoreFieldOfShots(this.ships));
+        if(this.allShipsDestroyed()){
+            this._playerSocket.emit('lost', this._score);
+        } else if(this.opponentPlayer.allShipsDestroyed()){
+            this._playerSocket.emit('won', this._score);
+        }
     }
 
     showShips() {
@@ -133,9 +138,7 @@ module.exports = class Player {
     _onSetPlayerName() {
         this.playerSocket.on('setPlayerName', playerName => {
             this.name = playerName;
-            if(this._gameReference.isAbleToPlay()) {
-                this._gameReference.refreshNames();
-            }
+            this._gameReference.refreshNames();
         });
     }
 

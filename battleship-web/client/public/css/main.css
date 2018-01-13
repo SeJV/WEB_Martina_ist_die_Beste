@@ -35,12 +35,12 @@ td{
     margin-bottom: 15px;
 }
 
-.spielfeld1{
+.battleground1{
     background-color: #07737a;
 }
-.spielfeld2{
+.battleground2{
     background-color: #07737a;
 }
-.spielfeld2:hover{
+.battleground2:hover{
     background-color: red;
 }
