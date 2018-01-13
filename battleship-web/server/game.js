@@ -112,10 +112,16 @@ module.exports = class Game {
     }
 
     reset() {
-        this.player1.playerSocket.emit('resetField');
-        this.player2.playerSocket.emit('resetField');
-        this.player1.reset();
-        this.player2.reset();
+        if(this.player1.playerSocket){
+            this.player1.playerSocket.emit('resetField');
+        }
+        if(this.player2.playerSocket){
+            this.player2.playerSocket.emit('resetField');
+        }
+        if(this.player2.playerSocket && this.player1.playerSocket){
+            this.player1.reset();
+            this.player2.reset();
+        }
         this.emitTurn();
     }
 

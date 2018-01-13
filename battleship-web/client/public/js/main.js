@@ -68,8 +68,8 @@ function initSocket() {
     });
 
     socket.on('resetField', () => {
-        $('#tablePlayer1').html(makeTable(1));
-        $('#tablePlayer2').html(makeTable(2));
+        makeTable(1, 'tablePlayer1');
+        makeTable(2, 'tablePlayer2');
         document.getElementById('myBody').style.backgroundColor = 'white';
         $('#highscore').html('');
         $('#resetGame').css('visibility', 'hidden');
@@ -134,6 +134,7 @@ function fire(x, y) {
 }
 
 function makeTable(playerNumber, tableID) {
+    $('#' + tableID).html('');
     let table = document.getElementById(tableID);
     let tableBody = document.createElement('tbody');
     table.appendChild(tableBody);
