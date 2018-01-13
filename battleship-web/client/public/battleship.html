@@ -30,10 +30,10 @@
                 <span id="errorMsg"></span>
             </div>
             <div class="wrapper">
-                <h5 id="myLabel" class="namesOfPlayer">DEIN NAME</h5>
+                <h5 id="currentName" class="namesOfPlayer">DEIN NAME</h5>
                 <table class="table table-bordered" id = "tablePlayer1">
                 </table>
-                <h5 id="opponentLabel" class="namesOfPlayer">Warten auf Gegner Name</h5>
+                <h5 id="opponentName" class="namesOfPlayer">Warten auf Gegner Name</h5>
                 <table class="table table-bordered" id = "tablePlayer2">
                 </table>
             </div>
@@ -50,8 +50,8 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label for="myLabelInput" class="col-form-label">Dein Name:</label>
-                                <input type="text" class="form-control" id="myLabelInput" autofocus/>
+                                <label for="myNameInput" class="col-form-label">Dein Name:</label>
+                                <input type="text" class="form-control" id="myNameInput" pattern="/^$|\s+/" autofocus/>
                             </div>
                         </form>
                     </div>

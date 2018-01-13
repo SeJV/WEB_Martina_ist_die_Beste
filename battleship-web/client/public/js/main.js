@@ -39,12 +39,12 @@ function initSocket() {
     });
     socket.on('playerTurn', isYourTurn => {
         if (isYourTurn) {
-            $('#myLabel').css('color', 'red');
-            $('#opponentLabel').css('color', 'black');
+            $('#currentName').css('color', 'red');
+            $('#opponentName').css('color', 'black');
         }
         else {
-            $('#myLabel').css('color', 'black');
-            $('#opponentLabel').css('color', 'red');
+            $('#currentName').css('color', 'black');
+            $('#opponentName').css('color', 'red');
         }
     });
     socket.on('won',highscore => {
@@ -64,7 +64,7 @@ function initSocket() {
         markMyDestroy(x,y);
     });
     socket.on('refreshName', name => {
-        $('#opponentLabel').html(name);
+        $('#opponentName').html(name);
     });
 
     socket.on('resetField', () => {
@@ -175,19 +175,16 @@ function resetTheGame(){
 }
 
 function setPlayerName() {
-    let myLabel = document.getElementById('myLabelInput');
-    // We have to reset the form errors with custom validity
-    myLabel.setCustomValidity('');
+    let myLabel = document.getElementById('myNameInput');
+    let myLabelName = myLabel.value.trim();
 
-    if (myLabel.checkValidity()) {
-        let myLabelName = myLabel.value.trim();
-        if (myLabelName.length == 0) {
-            myLabel.setCustomValidity('Du brauchst einen Namen');
-        } else {
-            document.getElementById('myLabel').innerHTML = myLabelName;
-            $('#playerName').modal('hide');
-            socket.emit('setPlayerName', myLabelName);
-        }
+    if (myLabelName.length == 0) {
+        myLabel.style.borderColor = '#f00';
+    } else {
+        myLabel.style.borderColor = 'rgba(0, 0, 0, 0.15)';
+        $('#playerName').modal('hide');
+        document.getElementById('currentName').innerText = myLabelName;
+        socket.emit('setPlayerName', myLabelName);
     }
 }
 
