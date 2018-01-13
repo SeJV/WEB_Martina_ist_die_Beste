@@ -20,6 +20,164 @@ module.exports = class Player {
         this._gameReference = gameReference;
     }
 
+    allShipsDestroyed() {
+        return shipLogic.allShipsDestroyed(this._ships);
+    }
+
+    showHits() {
+        this.playerSocket.emit('rejoinGame', this.restoreFieldOfShots(this.opponentPlayer.ships) , this.opponentPlayer.restoreFieldOfShots(this.ships));
+        if(this.allShipsDestroyed()){
+            this._playerSocket.emit('lost', this._score);
+        } else if(this.opponentPlayer.allShipsDestroyed()){
+            this._playerSocket.emit('won', this._score);
+        }
+    }
+
+    showShips() {
+        this.playerSocket.emit('myShips', this.field);
+    }
+
+    restoreFieldOfShots(opponentShips) {
+        let restoredFieldOfShots = [];
+        for(let y = 0; y < this._fieldOfShots.length; ++y) {
+            for(let x = 0; x < this._fieldOfShots[y].length; ++x) {
+                if(this._fieldOfShots[y][x] === 1) {
+                    restoredFieldOfShots.push({'xCoordinate' : x, 'yCoordinate' : y, 'typeOfHit' : 'noHit'});
+                }
+            }
+        }
+
+        opponentShips.forEach(ship => {
+            let isDestroyed = ship.isDestroyed();
+            ship.allCoordinates.forEach(coordinate => {
+                restoredFieldOfShots.forEach(shot => {
+                    if(shot['xCoordinate'] === coordinate.xCoordinate && shot['yCoordinate'] === coordinate.yCoordinate) {
+                        shot['typeOfHit'] = isDestroyed ? 'destroyed' : 'hit';
+                    }
+                });
+            });
+        });
+        return restoredFieldOfShots;
+    }
+
+    makeReadyToPlay(opponentPlayer) {
+        this._score = 0;
+        this.fieldOfShots = shipLogic.createField();
+        this.ships = shipPlacement.generateShipPlacement();
+        this.field = shipLogic.addShips(this.ships);
+        this.opponentPlayer = opponentPlayer;
+        this._onSetPlayerName();
+    }
+
+    _onDisconnect() {
+        this._playerSocket.on('disconnect', () => {
+            console.log(this.id + ' disconnected');
+        });
+    }
+
+    _onSetPlayerName() {
+        this.playerSocket.on('setPlayerName', playerName => {
+            this.name = playerName;
+            this._gameReference.refreshNames();
+        });
+    }
+
+    _onFire() {
+        this.playerSocket.on('fire', (x, y) => {
+            if (this._gameReference.isAbleToShoot(this, x, y)) {
+                if (this.opponentPlayer.field[y][x]) {
+                    this.playerSocket.emit('fireResult', true);
+                    this.opponentPlayer.playerSocket.emit('fireResultEnemy', x, y, true);
+                    this._addHit(this.opponentPlayer.ships, new Coordinate(x,y));
+                    this._markDestroyedShips();
+                } else {
+                    this.playerSocket.emit('fireResult', false);
+                    this.opponentPlayer.playerSocket.emit('fireResultEnemy', x, y, false);
+                    this._gameReference.nextTurn();
+                    this._gameReference.emitTurn();
+                }
+                this.fieldOfShots[y][x] = 1;
+                this.increaseScore();
+                if(this._gameReference.gameOver()) {
+                    if(this.allShipsDestroyed()) {
+                        this.opponentPlayer.hasWon();
+                    }
+                    else{
+                        this.hasWon();
+                    }
+                }
+            }
+        });
+    }
+
+    reset() {
+        this.makeReadyToPlay(this.opponentPlayer);
+        this.showShips();
+    }
+
+    hasWon() {
+        this._playerSocket.emit('won', this._score);
+        this._opponentPlayer._playerSocket.emit('lost', this._score);
+
+        let highscore = new Highscore();
+        if(!highscore.readHighscore(highscorePath)) {
+            let msg = 'Error reading from ' + highscorePath;
+            console.log(msg);
+            this._playerSocket.emit('highscore_error', msg);
+            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
+        }
+
+        highscore.addScore(new Score(this.name, this._score));
+        if(!highscore.writeHighscore(highscorePath)) {
+            let msg = 'Error writing in ' + highscorePath;
+            console.log(msg);
+            this._playerSocket.emit('highscore_error', msg);
+            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
+        }
+    }
+
+    _addHit(ships, possibleHit) {
+        ships.forEach(ship => {
+            ship.addHitCoordinate(possibleHit);
+        });
+    }
+
+    _markDestroyedShips() {
+        this.ships.forEach(ship => {
+            if(ship.isDestroyed()) {
+                ship.allCoordinates.forEach(coordinate => {
+                    this.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                    this.opponentPlayer.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                });
+            }
+        });
+        this.opponentPlayer.ships.forEach(ship => {
+            if(ship.isDestroyed()) {
+                ship.allCoordinates.forEach(coordinate => {
+                    this.opponentPlayer.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                    this.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
+                });
+            }
+        });
+    }
+
+    _onRestart() {
+        this.playerSocket.on('restart', () => {
+            this._gameReference.reset();
+        });
+    }
+
+    initializeSocket() {
+        this._onDisconnect();
+        this._onSetPlayerName();
+        this._onFire();
+        this._onRestart();
+    }
+
+    isNotConnected() {
+        return !this.playerSocket || !this.playerSocket.connected;
+    }
+
     set playerSocket(socket) {
         this._playerSocket = socket;
     }
@@ -77,163 +235,5 @@ module.exports = class Player {
     }
     get id() {
         return this._id;
-    }
-
-    allShipsDestroyed() {
-        return shipLogic.allShipsDestroyed(this._ships);
-    }
-
-    showHits() {
-        this.playerSocket.emit('rejoinGame', this.restoreFieldOfShots(this.opponentPlayer.ships) , this.opponentPlayer.restoreFieldOfShots(this.ships));
-        if(this.allShipsDestroyed()){
-            this._playerSocket.emit('lost', this._score);
-        } else if(this.opponentPlayer.allShipsDestroyed()){
-            this._playerSocket.emit('won', this._score);
-        }
-    }
-
-    showShips() {
-        this.playerSocket.emit('myShips', this.field);
-    }
-
-    restoreFieldOfShots(opponentShips) {
-        let restoredFieldOfShots = [];
-        for(let y = 0; y < this._fieldOfShots.length; ++y) {
-            for(let x = 0; x < this._fieldOfShots[y].length; ++x) {
-                if(this._fieldOfShots[y][x] === 1) {
-                    restoredFieldOfShots.push({'xCoordinate' : x, 'yCoordinate' : y, 'typeOfHit' : 'noHit'});
-                }
-            }
-        }
-
-        opponentShips.forEach(ship => {
-            let isDestroyed = ship.isDestroyed();
-            ship.allCoordinates.forEach(coordinate => {
-                restoredFieldOfShots.forEach(shot => {
-                    if(shot['xCoordinate'] === coordinate.xCoordinate && shot['yCoordinate'] === coordinate.yCoordinate) {
-                        shot['typeOfHit'] = isDestroyed ? 'destroyed' : 'hit';
-                    }
-                });
-            });
-        });
-        return restoredFieldOfShots;
-    }
-
-    makeReadyToPlay(opponentPlayer) {
-        this._score = 0;
-        this.fieldOfShots = shipLogic.createField();
-        this.ships = shipPlacement.generateShipPlacement();
-        this.field = shipLogic.addShips(this.ships);
-        this.opponentPlayer = opponentPlayer;
-        this._onSetPlayerName();
-    }
-
-    _onDisconnect() {
-        this.playerSocket.on('disconnect', () => {
-            console.log(this.id + ' disconnected');
-        });
-    }
-
-    _onSetPlayerName() {
-        this.playerSocket.on('setPlayerName', playerName => {
-            this.name = playerName;
-            this._gameReference.refreshNames();
-        });
-    }
-
-    _onFire() {
-        this.playerSocket.on('fire', (x, y) => {
-            if (this._gameReference.isAbleToShoot(this, x, y)) {
-                if (this.opponentPlayer.field[y][x]) {
-                    this.playerSocket.emit('fireResult', true);
-                    this.opponentPlayer.playerSocket.emit('fireResultEnemy', x, y, true);
-                    this._addHit(this.opponentPlayer.ships, new Coordinate(x,y));
-                    this._markDestroyedShips();
-                } else {
-                    this.playerSocket.emit('fireResult', false);
-                    this.opponentPlayer.playerSocket.emit('fireResultEnemy', x, y, false);
-                    this._gameReference.nextTurn();
-                    this._gameReference.emitTurn();
-                }
-                this.fieldOfShots[y][x] = 1;
-                this.increaseScore();
-                if(this._gameReference.gameOver()) {
-                    if(this.allShipsDestroyed()) {
-                        this.opponentPlayer.hasWon();
-                    }
-                    else{
-                        this.hasWon();
-                    }
-                }
-            }
-        });
-    }
-
-    reset() {
-        this.makeReadyToPlay(this.opponentPlayer);
-        this.showShips();
-    }
-
-    hasWon() {
-        this._playerSocket.emit('won', this._score);
-        this._opponentPlayer._playerSocket.emit('lost', this._score);
-
-        let highscore = new Highscore();
-        if(!highscore.readHighscore(highscorePath)) {
-            let msg = 'Error reading from ' + highscorePath;
-            console.log(msg);
-            this._playerSocket.emit('highscore_error', msg);
-            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
-        }
-        
-        highscore.addScore(new Score(this.name, this._score));
-        if(!highscore.writeHighscore(highscorePath)) {
-            let msg = 'Error writing in ' + highscorePath;
-            console.log(msg);
-            this._playerSocket.emit('highscore_error', msg);
-            this._opponentPlayer.playerSocket.emit('highscore_error', msg);
-        }
-    }
-
-    _addHit(ships, possibleHit) {
-        ships.forEach(ship => {
-            ship.addHitCoordinate(possibleHit);
-        });
-    }
-
-    _markDestroyedShips() {
-        this.ships.forEach(ship => {
-            if(ship.isDestroyed()) {
-                ship.allCoordinates.forEach(coordinate => {
-                    this.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                    this.opponentPlayer.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                });
-            }
-        });
-        this.opponentPlayer.ships.forEach(ship => {
-            if(ship.isDestroyed()) {
-                ship.allCoordinates.forEach(coordinate => {
-                    this.opponentPlayer.playerSocket.emit('myDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                    this.playerSocket.emit('opponentDestroyedShips', coordinate.xCoordinate, coordinate.yCoordinate);
-                });
-            }
-        });
-    }
-
-    _onRestart() {
-        this.playerSocket.on('restart', () => {
-            this._gameReference.reset();
-        });
-    }
-
-    initializeSocket() {
-        this._onDisconnect();
-        this._onSetPlayerName();
-        this._onFire();
-        this._onRestart();
-    }
-
-    isNotConnected() {
-        return !this.playerSocket || !this.playerSocket.connected;
     }
 };

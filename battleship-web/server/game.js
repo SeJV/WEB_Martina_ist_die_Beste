@@ -8,7 +8,7 @@ module.exports = class Game {
         this._player1 = new Player('Player1', this);
         this._player2 = new Player('Player2', this);
 
-        this._turn = this.player1.id;
+        this._turn = this._player1.id;
     }
 
     joinLobby(socket) {
