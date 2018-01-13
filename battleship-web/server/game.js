@@ -46,7 +46,6 @@ module.exports = class Game {
             }
             //make ready for new Game
             else {
-                this.resetPlayerNames();
                 this._isRunning = true;
 
                 this.player2.makeReadyToPlay(this.player1);
@@ -72,10 +71,10 @@ module.exports = class Game {
     }
 
     refreshNames() {
-        if(this.player2.name){
+        if(this.player2 && this.player2.name && this.player1.playerSocket){
             this.player1.playerSocket.emit('refreshName' , this.player2.name);
         }
-        if(this.player1.name){
+        if(this.player1 && this.player1.name && this.player2.playerSocket){
             this.player2.playerSocket.emit('refreshName' , this.player1.name);
         }
     }
