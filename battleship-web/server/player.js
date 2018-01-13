@@ -185,6 +185,7 @@ module.exports = class Player {
             this._playerSocket.emit('highscore_error', msg);
             this._opponentPlayer.playerSocket.emit('highscore_error', msg);
         }
+        
         highscore.addScore(new Score(this.name, this._score));
         if(!highscore.writeHighscore(highscorePath)) {
             let msg = 'Error writing in ' + highscorePath;

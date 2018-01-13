@@ -35,7 +35,7 @@ router.get('/api/v1/highscore', (req, res) => {
 });
 
 router.get('*', (req, res) => {
-    res.status(404).sendFile(path.join(publicDirectory, 'not-found.html'));
+    res.status(404).sendFile(path.join(publicDirectory, 'not_found.html'));
 });
 
 app.use(servestatic(publicDirectory));
@@ -44,7 +44,7 @@ app.use('/', router);
 
 io.on('connection', socket => {
     if(!game.joinLobby(socket)) {
-        socket.emit('onLobbyFull');
+        socket.emit('fullLobby');
     }
 });
 

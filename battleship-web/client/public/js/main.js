@@ -95,8 +95,8 @@ function initSocket() {
             }
         });
     });
-    socket.on('onLobbyFull', () => {
-        window.location.href = 'http://' + window.location.host + '/full-lobby.html';
+    socket.on('fullLobby', () => {
+        window.location.href = 'http://' + window.location.host + '/full_lobby.html';
     });
 }
 
@@ -195,7 +195,7 @@ function sizeContent() {
 
     document.getElementById('tablePlayer1').setAttribute('style','width: ' + newHeight + '!important');
     document.getElementById('tablePlayer2').setAttribute('style','width: ' + newHeight + '!important');
-    
+
     let tableWidth = $('.table-bordered').width();
     let marginLeft = ($('html').width()*0.5 - tableWidth*0.5) + 'px';
     $('#changePlayername').css('margin-left', marginLeft);
