@@ -70,6 +70,7 @@ module.exports = class Game {
             && this._player2.name;
     }
 
+    //refresh names shown by client
     refreshNames() {
         if(this._player2 && this._player2.name && this._player1.playerSocket){
             this._player1.playerSocket.emit('refreshName' , this._player2.name);
@@ -79,6 +80,7 @@ module.exports = class Game {
         }
     }
 
+    //reset names stored by server
     resetPlayerNames(){
         if(this._player1 && this._player1.name){
             this._player1.name = null;
