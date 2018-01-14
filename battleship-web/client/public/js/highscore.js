@@ -1,9 +1,9 @@
 function getJSON(url, callback) {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'json';
     xhr.onload = function() {
-        var status = xhr.status;
+        let status = xhr.status;
         if (status === 200) {
             callback(null, xhr.response);
         } else {
