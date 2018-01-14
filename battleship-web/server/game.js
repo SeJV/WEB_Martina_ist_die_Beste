@@ -47,8 +47,8 @@ module.exports = class Game {
             //make ready for new Game
             else {
                 this._isRunning = true;
-
                 this._player2.makeReadyToPlay(this._player1);
+                this.reset();
 
                 this._player1.initializeSocket();
                 this._player2.initializeSocket();

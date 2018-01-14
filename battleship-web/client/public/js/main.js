@@ -127,31 +127,31 @@ function initSocket() {
 }
 
 function markMyHit(x,y) {
-    document.getElementById('enemField' + x + y).style.backgroundColor = '#FF5341';
+    document.getElementById('enemField' + x + y).setAttribute('class', 'hit');
 }
 
 function markMyNoHit(x,y) {
-    document.getElementById('enemField' + x + y).style.backgroundColor = '#0ab2bd';
+    document.getElementById('enemField' + x + y).setAttribute('class', 'noHit');
 }
 
 function markMyDestroy(x,y) {
-    document.getElementById('enemField' + x + y).style.backgroundColor = '#008eb7';
+    document.getElementById('enemField' + x + y).setAttribute('class', 'destroy');
 }
 
 function markOpponentHit(x,y) {
-    document.getElementById('myField' + x + y).style.backgroundColor = '#034044';
+    document.getElementById('myField' + x + y).setAttribute('class', 'hit');
 }
 
 function markOpponentNoHit(x,y) {
-    document.getElementById('myField' + x + y).style.backgroundColor = '#0ab2bd';
+    document.getElementById('myField' + x + y).setAttribute('class', 'noHit');
 }
 
 function markOpponentDestroy(x,y) {
-    document.getElementById('myField' + x + y).style.backgroundColor = '#008eb7';
+    document.getElementById('myField' + x + y).setAttribute('class', 'destroy');
 }
 
 function markMyShips(x,y){
-    document.getElementById('myField' + x + y).style.backgroundColor = '#000000';
+    document.getElementById('myField' + x + y).setAttribute('class', 'ship');
 }
 
 function fire(x, y) {
@@ -169,7 +169,7 @@ function makeTable(playerNumber, tableID) {
         tableRow = document.createElement('tr');
         for (let x = 0; x < 10; ++x) {
             tableData = document.createElement('td');
-            tableData.setAttribute('class', 'battleground' + playerNumber);
+            tableData.setAttribute('class', 'default');
             if (playerNumber === 1) {
                 tableData.setAttribute('id', 'myField' + x + y);
             } else {

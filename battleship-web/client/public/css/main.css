@@ -34,13 +34,25 @@ td{
     margin-left: auto;
     margin-bottom: 15px;
 }
-
-.battleground1{
+.default{
     background-color: #07737a;
 }
-.battleground2{
-    background-color: #07737a;
+.ship{
+    background-color: black;
 }
-.battleground2:hover{
+#tablePlayer2 .hit{
+    background-color: #FF5341;
+}
+#tablePlayer1 .hit{
+    background-color: #034044;
+}
+.noHit{
+    background-color: #0ab2bd;
+}
+.destroy{
+    background-color: #008eb7;
+}
+#tablePlayer2 td:hover{
     background-color: red;
 }
+
