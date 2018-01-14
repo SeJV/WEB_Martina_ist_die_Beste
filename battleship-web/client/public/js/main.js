@@ -1,5 +1,6 @@
 let socket;
 let lastFire;
+let sound = new Sound();
 
 $(document).ready(() => {
     if(!socket) {
@@ -19,6 +20,10 @@ function initSocket() {
         if (isHit) {
             markMyHit(lastFire[0] , lastFire[1]);
         } else {
+            sound.playFireSound();
+            setTimeout( () => {
+                sound.playNoHitSound();
+            }, 1000);
             markMyNoHit(lastFire[0] , lastFire[1]);
         }
     });
@@ -27,6 +32,10 @@ function initSocket() {
         if (isHit) {
             markOpponentHit(x,y);
         } else {
+            sound.playFireSound();
+            setTimeout( () => {
+                sound.playNoHitSound();
+            }, 1000);
             markOpponentNoHit(x,y);
         }
     });
@@ -53,22 +62,26 @@ function initSocket() {
     });
 
     socket.on('won',highscore => {
+        sound.playEndOfGameSound();
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('DEIN HIGHSCORE: ' + highscore);
         $('#resetGame').css('visibility', 'visible');
     });
 
     socket.on('lost',highscore => {
+        sound.playEndOfGameSound();
         document.getElementById('myBody').style.backgroundColor = '#BF5FFF';
         $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
 
     socket.on('myDestroyedShips', (x,y) => {
+        sound.playHitSound();
         markOpponentDestroy(x,y);
     });
 
     socket.on('opponentDestroyedShips', (x,y) => {
+        sound.playHitSound();
         markMyDestroy(x,y);
     });
 
