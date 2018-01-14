@@ -1,5 +1,7 @@
 let socket;
 let lastFire;
+let sound = new Sound();
+
 $(document).ready(() => {
     if(!socket) {
         socket = io();
@@ -18,16 +20,26 @@ function initSocket() {
         if (isHit) {
             markMyHit(lastFire[0] , lastFire[1]);
         } else {
+            sound.playFireSound();
+            setTimeout( () => {
+                sound.playNoHitSound();
+            }, 1000);
             markMyNoHit(lastFire[0] , lastFire[1]);
         }
     });
+
     socket.on('fireResultEnemy', (x, y, isHit) =>{
         if (isHit) {
             markOpponentHit(x,y);
         } else {
+            sound.playFireSound();
+            setTimeout( () => {
+                sound.playNoHitSound();
+            }, 1000);
             markOpponentNoHit(x,y);
         }
     });
+
     socket.on('myShips', playerField => {
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 10; x++) {
@@ -37,34 +49,44 @@ function initSocket() {
             }
         }
     });
+
     socket.on('playerTurn', isYourTurn => {
         if (isYourTurn) {
-            $('#myLabel').css('color', 'red');
-            $('#opponentLabel').css('color', 'black');
+            $('#currentName').css('color', 'red');
+            $('#opponentName').css('color', 'black');
         }
         else {
-            $('#myLabel').css('color', 'black');
-            $('#opponentLabel').css('color', 'red');
+            $('#currentName').css('color', 'black');
+            $('#opponentName').css('color', 'red');
         }
     });
+
     socket.on('won',highscore => {
+        sound.playEndOfGameSound();
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('DEIN HIGHSCORE: ' + highscore);
         $('#resetGame').css('visibility', 'visible');
     });
+
     socket.on('lost',highscore => {
+        sound.playEndOfGameSound();
         document.getElementById('myBody').style.backgroundColor = '#BF5FFF';
         $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
+
     socket.on('myDestroyedShips', (x,y) => {
+        sound.playHitSound();
         markOpponentDestroy(x,y);
     });
+
     socket.on('opponentDestroyedShips', (x,y) => {
+        sound.playHitSound();
         markMyDestroy(x,y);
     });
+
     socket.on('refreshName', name => {
-        $('#opponentLabel').html(name);
+        $('#opponentName').html(name);
     });
 
     socket.on('resetField', () => {
@@ -85,6 +107,7 @@ function initSocket() {
                 markMyDestroy(shot['xCoordinate'], shot['yCoordinate']);
             }
         });
+
         opponentShots.forEach(shot => {
             if(shot['typeOfHit'] === 'noHit') {
                 markOpponentNoHit(shot['xCoordinate'], shot['yCoordinate']);
@@ -95,8 +118,9 @@ function initSocket() {
             }
         });
     });
-    socket.on('onLobbyFull', () => {
-        window.location.href = 'http://' + window.location.host + '/full-lobby.html';
+
+    socket.on('fullLobby', () => {
+        window.location.href = 'http://' + window.location.host + '/full_lobby.html';
     });
 }
 
@@ -138,6 +162,7 @@ function makeTable(playerNumber, tableID) {
     let table = document.getElementById(tableID);
     let tableBody = document.createElement('tbody');
     table.appendChild(tableBody);
+
     for (let y = 0; y < 10; ++y) {
         tableRow = document.createElement('tr');
         for (let x = 0; x < 10; ++x) {
@@ -175,19 +200,16 @@ function resetTheGame(){
 }
 
 function setPlayerName() {
-    let myLabel = document.getElementById('myLabelInput');
-    // We have to reset the form errors with custom validity
-    myLabel.setCustomValidity('');
+    let myLabel = document.getElementById('myNameInput');
+    let myLabelName = myLabel.value.trim();
 
-    if (myLabel.checkValidity()) {
-        let myLabelName = myLabel.value.trim();
-        if (myLabelName.length == 0) {
-            myLabel.setCustomValidity('Du brauchst einen Namen');
-        } else {
-            document.getElementById('myLabel').innerHTML = myLabelName;
-            $('#playerName').modal('hide');
-            socket.emit('setPlayerName', myLabelName);
-        }
+    if (myLabelName.length == 0) {
+        myLabel.style.borderColor = '#f00';
+    } else {
+        myLabel.style.borderColor = 'rgba(0, 0, 0, 0.15)';
+        $('#playerName').modal('hide');
+        document.getElementById('currentName').innerText = myLabelName;
+        socket.emit('setPlayerName', myLabelName);
     }
 }
 
@@ -196,7 +218,7 @@ function sizeContent() {
 
     document.getElementById('tablePlayer1').setAttribute('style','width: ' + newHeight + '!important');
     document.getElementById('tablePlayer2').setAttribute('style','width: ' + newHeight + '!important');
-    
+
     let tableWidth = $('.table-bordered').width();
     let marginLeft = ($('html').width()*0.5 - tableWidth*0.5) + 'px';
     $('#changePlayername').css('margin-left', marginLeft);
