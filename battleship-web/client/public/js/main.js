@@ -127,31 +127,31 @@ function initSocket() {
 }
 
 function markMyHit(x,y) {
-    document.getElementById('enemField' + x + y).setAttribute('class', 'hit');
+    document.getElementById('enemField' + x + y).className = 'hit';
 }
 
 function markMyNoHit(x,y) {
-    document.getElementById('enemField' + x + y).setAttribute('class', 'noHit');
+    document.getElementById('enemField' + x + y).className = 'noHit';
 }
 
 function markMyDestroy(x,y) {
-    document.getElementById('enemField' + x + y).setAttribute('class', 'destroy');
+    document.getElementById('enemField' + x + y).className = 'destroy';
 }
 
 function markOpponentHit(x,y) {
-    document.getElementById('myField' + x + y).setAttribute('class', 'hit');
+    document.getElementById('myField' + x + y).className = 'hit';
 }
 
 function markOpponentNoHit(x,y) {
-    document.getElementById('myField' + x + y).setAttribute('class', 'noHit');
+    document.getElementById('myField' + x + y).className = 'noHit';
 }
 
 function markOpponentDestroy(x,y) {
-    document.getElementById('myField' + x + y).setAttribute('class', 'destroy');
+    document.getElementById('myField' + x + y).className = 'destroy';
 }
 
 function markMyShips(x,y){
-    document.getElementById('myField' + x + y).setAttribute('class', 'ship');
+    document.getElementById('myField' + x + y).className = 'ship';
 }
 
 function fire(x, y) {
@@ -169,11 +169,11 @@ function makeTable(playerNumber, tableID) {
         tableRow = document.createElement('tr');
         for (let x = 0; x < 10; ++x) {
             tableData = document.createElement('td');
-            tableData.setAttribute('class', 'default');
+            tableData.className = 'default';
             if (playerNumber === 1) {
-                tableData.setAttribute('id', 'myField' + x + y);
+                tableData.id = 'myField' + x + y;
             } else {
-                tableData.setAttribute('id', 'enemField' + x + y);
+                tableData.id = 'enemField' + x + y;
                 tableData.setAttribute('onclick', 'fire(' + x + ',' + y + ')');
             }
             tableRow.appendChild(tableData);
