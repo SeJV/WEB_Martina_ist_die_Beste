@@ -1,5 +1,6 @@
 let socket;
 let lastFire;
+
 $(document).ready(() => {
     if(!socket) {
         socket = io();
@@ -21,6 +22,7 @@ function initSocket() {
             markMyNoHit(lastFire[0] , lastFire[1]);
         }
     });
+
     socket.on('fireResultEnemy', (x, y, isHit) =>{
         if (isHit) {
             markOpponentHit(x,y);
@@ -28,6 +30,7 @@ function initSocket() {
             markOpponentNoHit(x,y);
         }
     });
+
     socket.on('myShips', playerField => {
         for (let y = 0; y < 10; y++) {
             for (let x = 0; x < 10; x++) {
@@ -37,6 +40,7 @@ function initSocket() {
             }
         }
     });
+
     socket.on('playerTurn', isYourTurn => {
         if (isYourTurn) {
             $('#currentName').css('color', 'red');
@@ -47,22 +51,27 @@ function initSocket() {
             $('#opponentName').css('color', 'red');
         }
     });
+
     socket.on('won',highscore => {
         document.getElementById('myBody').style.backgroundColor = 'green';
         $('#highscore').html('DEIN HIGHSCORE: ' + highscore);
         $('#resetGame').css('visibility', 'visible');
     });
+
     socket.on('lost',highscore => {
         document.getElementById('myBody').style.backgroundColor = '#BF5FFF';
         $('#highscore').html('GEGNER SEIN HIGHSCORE: '+ highscore);
         $('#resetGame').css('visibility', 'visible');
     });
+
     socket.on('myDestroyedShips', (x,y) => {
         markOpponentDestroy(x,y);
     });
+
     socket.on('opponentDestroyedShips', (x,y) => {
         markMyDestroy(x,y);
     });
+
     socket.on('refreshName', name => {
         $('#opponentName').html(name);
     });
@@ -85,6 +94,7 @@ function initSocket() {
                 markMyDestroy(shot['xCoordinate'], shot['yCoordinate']);
             }
         });
+
         opponentShots.forEach(shot => {
             if(shot['typeOfHit'] === 'noHit') {
                 markOpponentNoHit(shot['xCoordinate'], shot['yCoordinate']);
@@ -95,6 +105,7 @@ function initSocket() {
             }
         });
     });
+
     socket.on('fullLobby', () => {
         window.location.href = 'http://' + window.location.host + '/full_lobby.html';
     });
@@ -138,6 +149,7 @@ function makeTable(playerNumber, tableID) {
     let table = document.getElementById(tableID);
     let tableBody = document.createElement('tbody');
     table.appendChild(tableBody);
+
     for (let y = 0; y < 10; ++y) {
         tableRow = document.createElement('tr');
         for (let x = 0; x < 10; ++x) {
