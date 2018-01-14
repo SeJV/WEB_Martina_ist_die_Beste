@@ -7,18 +7,26 @@ class Sound {
     }
 
     playFireSound() {
-        this._fireSound.play();
+        this._play(this._fireSound);
     }
 
     playNoHitSound() {
-        this._noHitSound.play();
+        this._play(this._noHitSound);
     }
 
     playHitSound() {
-        this._hitSound.play();
+        this._play(this._hitSound);
     }
 
     playEndOfGameSound() {
-        this._endOfGameSound.play();
+        this._play(this._endOfGameSound);
+    }
+
+    _play(sound) {
+        if(!sound.paused) {
+            sound.currentTime = 0;
+        } else {
+            sound.play();
+        }
     }
 }

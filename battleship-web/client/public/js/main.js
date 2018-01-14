@@ -18,6 +18,7 @@ $(window).resize(sizeContent);
 function initSocket() {
     socket.on('fireResult', isHit => {
         if (isHit) {
+            sound.playHitSound();
             markMyHit(lastFire[0] , lastFire[1]);
         } else {
             sound.playFireSound();
@@ -30,6 +31,7 @@ function initSocket() {
 
     socket.on('fireResultEnemy', (x, y, isHit) =>{
         if (isHit) {
+            sound.playHitSound();
             markOpponentHit(x,y);
         } else {
             sound.playFireSound();
