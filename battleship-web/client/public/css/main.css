@@ -52,6 +52,6 @@ td{
 .destroy{
     background-color: #008eb7;
 }
-#tablePlayer2 td:hover{
+#tablePlayer2 .default:hover{
     background-color: red;
 }
